@@ -10,6 +10,32 @@
 
 ---
 
+## Stages and Final Deliverables (2026-08-28 alignment)
+
+The macro objective: run RSIHub's evaluation over DSH, observe at least one
+generational improvement, and publish a Feishu-style visualization of the run.
+
+**Stage 1 (this run, prompt-only):** the mutator may edit only
+`target/prompt.md`. Close the full loop — baseline → three generations →
+Gate/Sealed → audit report → **HTML visualization** — across Tasks 1–12. This is
+the scope delivered and verified in this run.
+
+**Stage 2 (later, config/plugin-level):** once the loop is stable, widen the
+evolvable surface to `cordis.yml` configuration, `plugins/*.mjs`, and
+`skills/*.md` to reproduce the richer evolution shown in the Feishu share
+(generational structure changes, multi-file diffs, agent-authored plugins).
+Stage 2 requires changing the recipe's writable-path allowlist and the runtime
+identity; it is out of scope here and gets its own plan.
+
+**Visualization deliverable (Feishu-style, HTML):** see Task 12. It must include
+at least a score curve (baseline → each generation, Gate and Sealed), a
+generation overview (parent/child, gate accept/reject, champion), candidate
+diffs (per-generation `target/prompt.md` text diff; multi-file diff stat in
+Stage 2), resource consumption (target/mutator tokens, requests, wall-time,
+disk), and the mutator's hypothesis / expected_effect against actual outcomes.
+
+---
+
 ### Task 1: Establish a Reproducible Source Baseline
 
 **Files:**
@@ -1195,3 +1221,82 @@ local-only inference  loopback endpoint receipts and no remote model route
 ```
 
 Only after every row is proven should the persistent goal be marked complete.
+
+### Task 12: Publish the Feishu-Style HTML Visualization (Stage 1 finish)
+
+Render Task 11's `summary.json` into one shareable HTML page with multiple
+charts, matching the presentation style of the Feishu "interesting evolution
+shares" section. Read only certified report data; make no model calls and do not
+modify the workspace.
+
+**Files:**
+- Create: `scripts/build_visualization.py`
+- Create: `tests/fixtures/summary-sample.json`
+- Create: `tests/test_build_visualization.py`
+- Generate: `reports/qwen-first-v1/visualization.html`
+
+- [ ] **Step 1: Write failing visualization tests**
+
+Create `tests/fixtures/summary-sample.json` mirroring Task 7's `summary.json`
+schema (baseline, three generations, Gate/Sealed scores, candidate diffs,
+resource usage, hypothesis/expected_effect). Create
+`tests/test_build_visualization.py` and assert:
+
+```python
+html = render_html(load_summary(fixture))
+self.assertIn("<!DOCTYPE html>", html)
+self.assertIn("score-chart", html)
+self.assertIn("gen-1", html)
+self.assertEqual(html.count("candidate-diff"), 3)
+self.assertNotIn("secret-value", html)
+```
+
+Add a test asserting that a `summary.json` missing a required key makes
+`render_html` raise and name the missing key rather than emit a partial page.
+
+- [ ] **Step 2: Run tests and confirm RED**
+
+```bash
+python3 -m unittest tests.test_build_visualization -v
+```
+
+Expected: failure because `scripts/build_visualization.py` does not exist.
+
+- [ ] **Step 3: Implement deterministic HTML rendering**
+
+`scripts/build_visualization.py` reads only
+`reports/<experiment-id>/summary.json` and writes a single, self-contained
+`visualization.html` (inline SVG or a small inline script; no external CDN)
+containing:
+
+- a score-curve region (`score-chart`): baseline→gen1→gen2→gen3 Gate and Sealed
+  score lines with the champion marked;
+- a generation-overview region: per-generation parent/child, gate decision
+  (accepted/rejected), and whether it became champion;
+- a candidate-diff region (`candidate-diff` ×3): each generation's
+  `target/prompt.md` text diff;
+- a resource-consumption region: comparative bars for target/mutator tokens,
+  request count, wall-time, and disk;
+- an improvement-hypothesis region: each generation's hypothesis /
+  expected_effect against the actual Gate outcome.
+
+Apply the same redaction used by the report; on missing data, raise rather than
+silently skip.
+
+- [ ] **Step 4: Generate and verify the artifact**
+
+```bash
+python3 scripts/build_visualization.py --workspace workspaces/qwen-first-v1 --report reports/qwen-first-v1
+python3 -m unittest tests.test_build_visualization -v
+```
+
+Expected: `reports/qwen-first-v1/visualization.html` is generated, tests pass,
+and the page opens offline in a browser.
+
+- [ ] **Step 5: Commit**
+
+```bash
+git add scripts/build_visualization.py tests/fixtures/summary-sample.json tests/test_build_visualization.py reports/qwen-first-v1/visualization.html
+git diff --cached --check
+git commit -m "feat: visualize evolution results as shareable HTML"
+```
