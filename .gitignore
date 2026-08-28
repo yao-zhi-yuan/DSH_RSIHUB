@@ -1,0 +1,13 @@
+.env
+.secrets/
+runs/
+workspaces/
+sessions/
+vendor/
+experiment/
+.worktrees/
+reports/raw/
+.venv/
+node_modules/
+__pycache__/
+*.pyc

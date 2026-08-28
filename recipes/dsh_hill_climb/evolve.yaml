@@ -1,0 +1,50 @@
+experiment:
+  id: dsh_qwen_hill_climb
+  max_generations: 3
+  target_score: null
+  children_per_gen: 1
+  mode: driver
+  seed: 17
+target:
+  seed: builtin-local-smoke
+surface:
+  include:
+    - target/prompt.md
+  exclude: []
+operators:
+  select: {operator: greedy, timeout_s: 120, config: {}}
+  rollout:
+    operator: harbor
+    timeout_s: 1200
+    config:
+      budget_tasks: 4
+      n_concurrent: 2
+      max_retries: 0
+      task_sampling: generation_shuffle
+  analyze:
+    operator: failure_patterns
+    timeout_s: 120
+    config: {max_chars: 30000}
+  mutate:
+    script: ../../scripts/rsihub_qwen_prompt_mutate.py
+    timeout_s: 300
+    config:
+      command: python3 "$EVOLVE_EXPERIMENT_ROOT/scripts/qwen_mutate.py"
+  gate: {operator: hillclimb, timeout_s: 120, config: {}}
+  record: {operator: jsonl, timeout_s: 120, config: {}}
+  timeout_s: 120
+execution_runtime:
+  backend: docker
+evaluator:
+  engine: harbor
+  dataset: dsh-synthetic-16
+  agent: target.agent:HarborAgent
+  model: ollama/qwen3:8b
+  split: {train: 0.5, gate: 0.25, sealed: 0.25, seed: 17}
+  sampling: static
+  tasks_per_round: 4
+  anchor: {final: true, every_rounds: 0}
+  repetitions: 1
+  n_concurrent: 2
+  max_retries: 0
+  partial_floor: 0.8

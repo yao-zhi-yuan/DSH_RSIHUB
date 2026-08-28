@@ -1,0 +1,12 @@
+{
+  "name": "dsh-rsihub-first-evolution",
+  "version": "0.1.0",
+  "private": true,
+  "description": "A reproducible RSIHub and DeepSeek Harness evolution experiment.",
+  "engines": {
+    "node": ">=24"
+  },
+  "dependencies": {
+    "@deepseek-ai/dsh": "0.1.1-rc.2"
+  }
+}

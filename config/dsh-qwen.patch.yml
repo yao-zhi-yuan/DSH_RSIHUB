@@ -1,0 +1,74 @@
+# Route the frozen DSH headless profile through local Ollama.
+
+- id: agent-default-model
+  config:
+    provider: ollama-target
+    model: !!js process.env.OLLAMA_TARGET_MODEL
+
+- id: llm-pi-ai
+  config:
+    providers:
+      ollama-target:
+        displayName: Ollama Qwen target
+        apiKeyEnv: OLLAMA_API_KEY
+        api: openai-completions
+        baseURL: !!js process.env.OLLAMA_BASE_URL
+        defaultContextWindow: 32768
+        defaultMaxTokens: 8192
+        timeoutMs: 120000
+        streamIdleTimeoutMs: 120000
+        retryPolicy:
+          mode: normal
+          maxRetries: 0
+        models:
+          - id: !!js process.env.OLLAMA_TARGET_MODEL
+            contextWindow: 32768
+            maxTokens: 8192
+
+- id: session-telemetry-otel
+  disabled: true
+
+- id: session-title-llm
+  disabled: true
+
+# Keep the experiment's tool surface focused and deterministic.
+# Core bash, filesystem, search, and editor tools remain enabled.
+- id: tool-pwsh
+  disabled: true
+- id: tool-jobs
+  disabled: true
+- id: tool-skill
+  disabled: true
+- id: subagent
+  disabled: true
+- id: subagent-spawn-in-process
+  disabled: true
+- id: subagent-fork-in-process
+  disabled: true
+- id: workflow-worker-thread
+  disabled: true
+- id: tool-subagent-control
+  disabled: true
+- id: tool-subagent-list-agents
+  disabled: true
+- id: tool-subagent
+  disabled: true
+- id: tool-subagent-fork
+  disabled: true
+- id: tool-subagent-report
+  disabled: true
+- id: tool-workflow
+  disabled: true
+- id: tool-todo
+  disabled: true
+- id: tool-goal
+  disabled: true
+- id: tool-ralph
+  disabled: true
+- id: tool-web
+  disabled: true
+
+- id: session-persistence-jsonl
+  config:
+    root: !!js dshHomePath('sessions')
+    compression: none
