@@ -1,0 +1,136 @@
+{
+  "dataset": "/Users/bytedance/Documents/ChatGPT/DSH/tasks/synthetic-16",
+  "failed_checks": [],
+  "schema_version": 1,
+  "task_count": 16,
+  "tasks": [
+    {
+      "files_ok": true,
+      "initial_reward": 0.0,
+      "name": "artifact-chunk-sequence",
+      "oracle_reward": 1.0,
+      "python_ok": true,
+      "sha256": "sha256:030114630712871bd792222716b37ac020a955010517584e67e23ae3b61fc802"
+    },
+    {
+      "files_ok": true,
+      "initial_reward": 0.0,
+      "name": "artifact-parse-boolean",
+      "oracle_reward": 1.0,
+      "python_ok": true,
+      "sha256": "sha256:317f3e82b737a4cab76662ded6bc72947d3014be03ed59c8e1e4f3b64b170c6b"
+    },
+    {
+      "files_ok": true,
+      "initial_reward": 0.0,
+      "name": "artifact-required-result",
+      "oracle_reward": 1.0,
+      "python_ok": true,
+      "sha256": "sha256:582f3422ee2d19486d0ea262226f6bcde9cfd61eda2c2a444ccf132669641a35"
+    },
+    {
+      "files_ok": true,
+      "initial_reward": 0.0,
+      "name": "artifact-unique-records",
+      "oracle_reward": 1.0,
+      "python_ok": true,
+      "sha256": "sha256:7f0241387ba007bc11bbad056d04620cbf5beccdd57856a6f0e4f7276934b648"
+    },
+    {
+      "files_ok": true,
+      "initial_reward": 0.0,
+      "name": "contract-clamp",
+      "oracle_reward": 1.0,
+      "python_ok": true,
+      "sha256": "sha256:1e733d4ee2c6ffd9727a3e5054e7df823eef2b8e80ea4bf2dde4088635269784"
+    },
+    {
+      "files_ok": true,
+      "initial_reward": 0.0,
+      "name": "contract-merge-intervals",
+      "oracle_reward": 1.0,
+      "python_ok": true,
+      "sha256": "sha256:3b3ddf1399c454b182d6b856dd4ccdca38b0b4bee9ed65923e4f1eec2d8abb44"
+    },
+    {
+      "files_ok": true,
+      "initial_reward": 0.0,
+      "name": "contract-normalize-tags",
+      "oracle_reward": 1.0,
+      "python_ok": true,
+      "sha256": "sha256:4e27a73b4ef2c2a5d5224bf12559798b0a6dfa072b66ab294cba10071ef555ff"
+    },
+    {
+      "files_ok": true,
+      "initial_reward": 0.0,
+      "name": "contract-parse-size",
+      "oracle_reward": 1.0,
+      "python_ok": true,
+      "sha256": "sha256:a5868a4ff79c191be7fb0284fc6a63b834a131a53da53708feb5e2158a0877c1"
+    },
+    {
+      "files_ok": true,
+      "initial_reward": 0.0,
+      "name": "execution-deadline-action",
+      "oracle_reward": 1.0,
+      "python_ok": true,
+      "sha256": "sha256:2ed47749f1ed59e89368076a1c567542f9122b322c788764e7d66a12e36563c3"
+    },
+    {
+      "files_ok": true,
+      "initial_reward": 0.0,
+      "name": "execution-diff-policy",
+      "oracle_reward": 1.0,
+      "python_ok": true,
+      "sha256": "sha256:fab7bec8a142271a54e8a4708c51d51db58b264ea700e15b7161b2e03b5e0147"
+    },
+    {
+      "files_ok": true,
+      "initial_reward": 0.0,
+      "name": "execution-money-total",
+      "oracle_reward": 1.0,
+      "python_ok": true,
+      "sha256": "sha256:e1aae55bc910e31d69a3f60e0abfd4757aae8c69f073feabd8ee7bb0334cfadf"
+    },
+    {
+      "files_ok": true,
+      "initial_reward": 0.0,
+      "name": "execution-safe-relative-path",
+      "oracle_reward": 1.0,
+      "python_ok": true,
+      "sha256": "sha256:a17af4009caa32cf4784945c7e5d3dda8b712e9c1272db894aee6bfcf75f4c36"
+    },
+    {
+      "files_ok": true,
+      "initial_reward": 0.0,
+      "name": "verification-canonical-key",
+      "oracle_reward": 1.0,
+      "python_ok": true,
+      "sha256": "sha256:55d6c02b91b6518679d1bda7254809ab813111f368a759e8e8cfc4b3a999ac49"
+    },
+    {
+      "files_ok": true,
+      "initial_reward": 0.0,
+      "name": "verification-jsonl-summary",
+      "oracle_reward": 1.0,
+      "python_ok": true,
+      "sha256": "sha256:2ccf80c3fc3c9f8694378ebda6b0b356d848db82574063d46e21a677ece39960"
+    },
+    {
+      "files_ok": true,
+      "initial_reward": 0.0,
+      "name": "verification-redact-secrets",
+      "oracle_reward": 1.0,
+      "python_ok": true,
+      "sha256": "sha256:8d90c0444640edc245b28b5c309ab8e086661301f4731803faa59ed01828d6e6"
+    },
+    {
+      "files_ok": true,
+      "initial_reward": 0.0,
+      "name": "verification-retry-schedule",
+      "oracle_reward": 1.0,
+      "python_ok": true,
+      "sha256": "sha256:2cafbdceb760ae7011e128746f4db27095b96efd91eabe2eb3bd22469f76edf6"
+    }
+  ]
+}
