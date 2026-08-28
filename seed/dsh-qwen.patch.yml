@@ -14,7 +14,7 @@
         api: openai-completions
         baseURL: !!js process.env.OLLAMA_BASE_URL
         defaultContextWindow: 32768
-        defaultMaxTokens: 8192
+        defaultMaxTokens: 32768
         timeoutMs: 120000
         streamIdleTimeoutMs: 120000
         retryPolicy:
@@ -23,7 +23,7 @@
         models:
           - id: !!js process.env.OLLAMA_TARGET_MODEL
             contextWindow: 32768
-            maxTokens: 8192
+            maxTokens: 32768
 
 - id: session-telemetry-otel
   disabled: true

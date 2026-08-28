@@ -75,7 +75,8 @@ def probe(role: str, *, base_url: str, api_key: str, model: str) -> dict[str, An
             }
         ],
         "temperature": 0,
-        "max_tokens": 64,
+        # Local inference is uncapped: the probe stops naturally at the tool call
+        # or JSON object, so no artificial max_tokens is imposed.
     }
     if is_target:
         payload["tools"] = [

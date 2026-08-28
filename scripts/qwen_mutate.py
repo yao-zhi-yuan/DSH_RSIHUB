@@ -93,7 +93,8 @@ def request_mutation(current: str, framework_prompt: str, evidence: str) -> tupl
     payload = {
         "model": model,
         "temperature": 0,
-        "max_tokens": 4096,
+        # Local inference is uncapped: let the mutator finish its JSON object
+        # naturally instead of risking a truncated candidate.
         "messages": [
             {
                 "role": "system",
