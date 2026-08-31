@@ -359,6 +359,16 @@ def _run_generations(args: argparse.Namespace, name: str, max_generations: int) 
 def cmd_canary(args: argparse.Namespace) -> int:
     """Run the local isolation probe, then one target task; fail closed on either."""
     _raw, runtime, secrets = _load(require_models=True)
+    # Record which exact model weights were tested in the canary artifact.
+    canary_env = _subprocess_env(runtime)
+    try:
+        resolved = probe_models(runtime["OLLAMA_BASE_URL"], (runtime["OLLAMA_TARGET_MODEL"],))
+        digest = resolved[runtime["OLLAMA_TARGET_MODEL"]].get("digest")
+        if isinstance(digest, str):
+            canary_env["OLLAMA_TARGET_DIGEST"] = digest
+    except RuntimeError as exc:
+        print(f"canary: {exc}", file=sys.stderr)
+        return 1
     isolation = record_command(
         "canary-isolation",
         [
@@ -367,7 +377,7 @@ def cmd_canary(args: argparse.Namespace) -> int:
             "--output",
             str(CONTROL_DIR / "isolation-canary.json"),
         ],
-        _subprocess_env(runtime),
+        canary_env,
         secrets=secrets,
     )
     if isolation.returncode != 0:
