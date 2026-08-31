@@ -18,7 +18,9 @@ operators:
   select: {operator: greedy, timeout_s: 120, config: {}}
   rollout:
     operator: harbor
-    timeout_s: 1200
+    # Budget for the whole split. With n_concurrent 2 and 4 tasks (two waves)
+    # at a 900s per-task cap, allow ~2 waves plus setup/verify overhead.
+    timeout_s: 2400
     config:
       budget_tasks: 4
       n_concurrent: 2

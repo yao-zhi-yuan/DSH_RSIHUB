@@ -71,8 +71,12 @@ class HarborAgent(BaseAgent):
         )
 
         self.logs_dir.mkdir(parents=True, exist_ok=True)
-        (self.logs_dir / "dsh.stdout.txt").write_text(result.stdout, encoding="utf-8")
-        (self.logs_dir / "dsh.stderr.txt").write_text(result.stderr, encoding="utf-8")
+        # Harbor's exec may return None for either stream; coerce to "" so log
+        # capture and downstream parsing never crash on a missing stream.
+        stdout = result.stdout or ""
+        stderr = result.stderr or ""
+        (self.logs_dir / "dsh.stdout.txt").write_text(stdout, encoding="utf-8")
+        (self.logs_dir / "dsh.stderr.txt").write_text(stderr, encoding="utf-8")
         (self.logs_dir / "dsh-run.json").write_text(
             json.dumps(
                 {
