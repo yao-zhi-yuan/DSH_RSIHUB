@@ -109,8 +109,15 @@ class OllamaMigrationTests(unittest.TestCase):
         self.assertTrue(command.startswith("env -i "))
 
     def test_runtime_digest_covers_clean_environment_helper(self) -> None:
+        spec = importlib.util.spec_from_file_location(
+            "runtime_digest", ROOT / "scripts" / "runtime_digest.py"
+        )
+        module = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(module)
+        # Recursive seed hashing must still cover the clean-environment helper.
+        self.assertIn("seed/runtime_env.py", module.seed_files())
+        self.assertIn("seed/agent.py", module.seed_files())
         source = (ROOT / "scripts" / "runtime_digest.py").read_text(encoding="utf-8")
-        self.assertIn('"seed/runtime_env.py"', source)
         self.assertIn('"containers/evaluator/Dockerfile"', source)
         self.assertIn('"scripts/ollama_config.py"', source)
 
