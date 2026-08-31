@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import hashlib
 import json
 import unittest
 import urllib.error
@@ -100,6 +101,67 @@ class ProbeModelsTests(unittest.TestCase):
             experimentctl.probe_models(
                 "http://127.0.0.1:11434/v1", self.REQUIRED, opener=opener
             )
+
+
+class TrainScheduleTests(unittest.TestCase):
+    """The frozen Train schedule must cover every Train task across gens 1-3.
+
+    Reproduces RSIHub's real selection without importing the heavy
+    ``evolve.splits`` module (which needs harbor): the split is assigned exactly
+    as ``evolve.splits._assign`` does (sort by ``sha256(seed\\0name)``, floor by
+    ratio, distribute the remainder by fractional priority), then each
+    generation's rollout picks ``budget_tasks`` via ``generation_shuffle`` keyed
+    by ``f"{rollout_seed}:{genid}"`` (the rollout config seed defaults to 0).
+    """
+
+    ROOT = Path(__file__).resolve().parents[1]
+    DATASET = ROOT / "tasks" / "synthetic-16"
+    SPLIT_NAMES = ("train", "gate", "sealed")
+
+    @staticmethod
+    def _digest(value: str) -> str:
+        return hashlib.sha256(value.encode()).hexdigest()
+
+    def _assign_train(self, names: list[str], seed: int) -> list[str]:
+        import math
+
+        ratios = {"train": 0.5, "gate": 0.25, "sealed": 0.25}
+        ordered = sorted(names, key=lambda name: self._digest(f"{seed}\0{name}"))
+        raw = {name: len(ordered) * ratios[name] for name in self.SPLIT_NAMES}
+        counts = {name: math.floor(raw[name]) for name in self.SPLIT_NAMES}
+        remainder = len(ordered) - sum(counts.values())
+        priority = sorted(
+            self.SPLIT_NAMES,
+            key=lambda name: (-(raw[name] - counts[name]), self.SPLIT_NAMES.index(name)),
+        )
+        for name in priority[:remainder]:
+            counts[name] += 1
+        return sorted(ordered[: counts["train"]])
+
+    def _train_split(self) -> list[str]:
+        names = sorted(
+            path.name
+            for path in self.DATASET.iterdir()
+            if path.is_dir() and (path / "task.toml").is_file()
+        )
+        return self._assign_train(names, 17)
+
+    @staticmethod
+    def _generation_batch(train: list[str], sampling_key: str, budget: int) -> list[str]:
+        ordered = sorted(
+            train,
+            key=lambda name: hashlib.sha256(f"{sampling_key}\0{name}".encode()).hexdigest(),
+        )
+        return ordered[:budget]
+
+    def test_generation_shuffle_covers_full_train_split(self) -> None:
+        train = self._train_split()
+        self.assertEqual(len(train), 8)
+        covered: set[str] = set()
+        for genid in ("1", "2", "3"):
+            covered.update(self._generation_batch(train, f"0:{genid}", 4))
+        self.assertEqual(covered, set(train))
+        self.assertEqual(len(covered), 8)
 
 
 if __name__ == "__main__":
