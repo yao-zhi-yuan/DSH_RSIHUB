@@ -6,6 +6,9 @@ experiment:
   mode: driver
   seed: 17
 target:
+  # Placeholder only. `scripts/experimentctl.py init` overrides this with
+  # `--seed <repo>/seed`, vendoring the DSH Ollama adapter (agent.py,
+  # dsh_session.py, prompt.md, dsh-qwen.patch.yml, runtime_env.py) into target/.
   seed: builtin-local-smoke
 surface:
   include:

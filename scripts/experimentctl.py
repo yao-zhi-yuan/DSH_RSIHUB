@@ -32,6 +32,7 @@ ENV_PATH = ROOT / ".env"
 CONTROL_DIR = ROOT / "reports" / "control"
 RECIPE_PATH = ROOT / "recipes" / "dsh_hill_climb" / "evolve.yaml"
 DATASET_DIR = ROOT / "tasks" / "synthetic-16"
+SEED_DIR = ROOT / "seed"
 REQUIRED_MODELS = ("OLLAMA_TARGET_MODEL", "OLLAMA_MUTATOR_MODEL")
 # Only these names ever reach a subprocess; everything else in .env stays local.
 RUNTIME_ALLOWLIST = (
@@ -329,6 +330,8 @@ def cmd_init(args: argparse.Namespace) -> int:
             str(workspace),
             "--recipe-path",
             str(RECIPE_PATH),
+            "--seed",
+            str(SEED_DIR),
             "--dataset",
             str(DATASET_DIR),
         ],
