@@ -357,7 +357,22 @@ def _run_generations(args: argparse.Namespace, name: str, max_generations: int) 
 
 
 def cmd_canary(args: argparse.Namespace) -> int:
-    """Run one target task and the local isolation probe."""
+    """Run the local isolation probe, then one target task; fail closed on either."""
+    _raw, runtime, secrets = _load(require_models=True)
+    isolation = record_command(
+        "canary-isolation",
+        [
+            sys.executable,
+            str(ROOT / "scripts" / "isolation_canary.py"),
+            "--output",
+            str(CONTROL_DIR / "isolation-canary.json"),
+        ],
+        _subprocess_env(runtime),
+        secrets=secrets,
+    )
+    if isolation.returncode != 0:
+        print("canary: failed (isolation probe)", file=sys.stderr)
+        return isolation.returncode
     return _run_generations(args, "canary", 0)
 
 
