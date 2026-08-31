@@ -1,5 +1,7 @@
 {"type":"user/message","seq":2,"data":{"message":{"role":"user","content":[{"type":"text","text":"Repair module.py"}]}}}
-{"type":"assistant/message","seq":4,"data":{"message":{"role":"assistant","content":[{"type":"tool-call","name":"read","arguments":"{\"file_path\":\"module.py\"}"}],"usage":{"inputTokens":100,"outputTokens":20,"cacheReadTokens":40}}}}
+{"type":"assistant/chunk","seq":3,"data":{"turn":1,"step":1,"chunk":{"type":"usage","usage":{"inputTokens":100,"outputTokens":20,"cacheReadTokens":40}}}}
+{"type":"assistant/message","seq":4,"data":{"message":{"role":"assistant","content":[{"type":"tool-call","name":"read","arguments":"{\"file_path\":\"module.py\"}"}]}}}
 {"type":"tool/call","seq":5,"data":{"callId":"call-1","name":"read","arguments":"{\"file_path\":\"module.py\"}"}}
 {"type":"tool/result","seq":6,"data":{"callId":"call-1","message":{"role":"tool","content":[{"type":"text","text":"api_key=secret-value"}]}}}
-{"type":"assistant/message","seq":8,"data":{"message":{"role":"assistant","content":[{"type":"text","text":"Done."}],"usage":{"inputTokens":120,"outputTokens":15,"cacheReadTokens":50}}}}
+{"type":"assistant/chunk","seq":7,"data":{"turn":1,"step":2,"chunk":{"type":"usage","usage":{"inputTokens":120,"outputTokens":15,"cacheReadTokens":50}}}}
+{"type":"assistant/message","seq":8,"data":{"message":{"role":"assistant","content":[{"type":"text","text":"Done."}]}}}

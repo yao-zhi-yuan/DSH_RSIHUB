@@ -108,7 +108,7 @@ def parse_session_files(
     *,
     sensitive_values: set[str] | None = None,
 ) -> SessionEvidence:
-    """Parse DSH JSONL once, count assistant/message usage, and redact evidence."""
+    """Parse DSH JSONL once, sum per-step usage, and redact evidence."""
     sensitive = set(sensitive_values or set())
     session_files: list[str] = []
     events: list[dict[str, object]] = []
@@ -122,14 +122,18 @@ def parse_session_files(
         message = data.get("message")
         message = message if isinstance(message, dict) else {}
 
-        if row_type == "assistant/message":
-            # One model response: count usage here, never on assistant/chunk.
-            requests += 1
-            usage = message.get("usage")
-            if isinstance(usage, dict):
-                input_tokens += _int(usage.get("inputTokens"))
-                output_tokens += _int(usage.get("outputTokens"))
-                cache_tokens += _int(usage.get("cacheReadTokens"))
+        if row_type == "assistant/chunk":
+            # DSH emits one usage chunk per step; each reports that request's
+            # tokens. Text/reasoning chunks carry no usage and are skipped.
+            chunk = data.get("chunk")
+            if isinstance(chunk, dict) and chunk.get("type") == "usage":
+                usage = chunk.get("usage")
+                if isinstance(usage, dict):
+                    requests += 1
+                    input_tokens += _int(usage.get("inputTokens"))
+                    output_tokens += _int(usage.get("outputTokens"))
+                    cache_tokens += _int(usage.get("cacheReadTokens"))
+        elif row_type == "assistant/message":
             text = _message_text(message)
             if text.strip():
                 clipped = _clean(text, sensitive)
@@ -158,9 +162,8 @@ def parse_session_files(
                     "observation": {"results": [{"content": _clean(_message_text(message), sensitive)}]},
                 }
             )
-        # user/message and assistant/chunk are recognized but contribute no
-        # trajectory event: the instruction is supplied to the mutator by Harbor
-        # separately, and chunk usage duplicates the assistant/message total.
+        # user/message carries the instruction, which Harbor supplies to the
+        # mutator separately, so it contributes no trajectory event here.
 
     usage = Usage(
         input_tokens=input_tokens,

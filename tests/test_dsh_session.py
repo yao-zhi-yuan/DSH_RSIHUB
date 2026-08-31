@@ -44,15 +44,16 @@ class ParseSessionTests(unittest.TestCase):
             "{",
             json.dumps(
                 {
-                    "type": "assistant/message",
+                    "type": "assistant/chunk",
                     "seq": 1,
-                    "data": {
-                        "message": {
-                            "role": "assistant",
-                            "content": [{"type": "text", "text": "Hi."}],
-                            "usage": {"inputTokens": 5, "outputTokens": 2, "cacheReadTokens": 1},
-                        }
-                    },
+                    "data": {"turn": 1, "step": 1, "chunk": {"type": "usage", "usage": {"inputTokens": 5, "outputTokens": 2, "cacheReadTokens": 1}}},
+                }
+            ),
+            json.dumps(
+                {
+                    "type": "assistant/message",
+                    "seq": 2,
+                    "data": {"message": {"role": "assistant", "content": [{"type": "text", "text": "Hi."}]}},
                 }
             ),
         )
@@ -61,31 +62,21 @@ class ParseSessionTests(unittest.TestCase):
         self.assertEqual(evidence.usage.requests, 1)
         self.assertEqual(evidence.final_response, "Hi.")
 
-    def test_does_not_double_count_chunk_usage(self) -> None:
+    def test_counts_usage_per_step_not_per_text_chunk(self) -> None:
+        # Only usage-typed chunks contribute; text/reasoning chunks do not.
         path = self._write(
             json.dumps(
                 {
-                    "type": "assistant/message",
+                    "type": "assistant/chunk",
                     "seq": 1,
-                    "data": {
-                        "message": {
-                            "role": "assistant",
-                            "content": [{"type": "text", "text": "Answer."}],
-                            "usage": {"inputTokens": 10, "outputTokens": 4, "cacheReadTokens": 2},
-                        }
-                    },
+                    "data": {"turn": 1, "step": 1, "chunk": {"type": "text", "text": "thinking"}},
                 }
             ),
             json.dumps(
                 {
                     "type": "assistant/chunk",
                     "seq": 2,
-                    "data": {
-                        "message": {
-                            "role": "assistant",
-                            "usage": {"inputTokens": 10, "outputTokens": 4, "cacheReadTokens": 2},
-                        }
-                    },
+                    "data": {"turn": 1, "step": 1, "chunk": {"type": "usage", "usage": {"inputTokens": 10, "outputTokens": 4, "cacheReadTokens": 2}}},
                 }
             ),
         )
@@ -114,7 +105,7 @@ class ParseSessionTests(unittest.TestCase):
         self.assertEqual(evidence.usage.input_tokens, 0)
         self.assertEqual(evidence.usage.output_tokens, 0)
         self.assertEqual(evidence.usage.cache_tokens, 0)
-        self.assertEqual(evidence.usage.requests, 1)
+        self.assertEqual(evidence.usage.requests, 0)
 
     def test_redacts_bearer_token_and_endpoint(self) -> None:
         path = self._write(
