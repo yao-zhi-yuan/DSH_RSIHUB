@@ -411,8 +411,13 @@ def cmd_baseline(args: argparse.Namespace) -> int:
 
 
 def cmd_evolve(args: argparse.Namespace) -> int:
-    """Run through generation three."""
-    return _run_generations(args, "evolve", 3)
+    """Run through the requested generation (default three).
+
+    ``evolve run`` is resumable, so passing ``--max-generations`` advances the
+    workspace one generation at a time (gen1, then gen2, then gen3) while keeping
+    the control plane's fixed env allowlist and command recording.
+    """
+    return _run_generations(args, "evolve", int(getattr(args, "max_generations", 3)))
 
 
 def cmd_report(args: argparse.Namespace) -> int:
@@ -450,6 +455,16 @@ def build_parser() -> argparse.ArgumentParser:
     ):
         stage = sub.add_parser(name, help=help_text)
         stage.add_argument("--workspace", required=True, help="workspace directory")
+        if name == "evolve":
+            # evolve run is resumable; let the operator advance one generation at
+            # a time for per-generation review instead of the full run of three.
+            stage.add_argument(
+                "--max-generations",
+                type=int,
+                default=3,
+                dest="max_generations",
+                help="highest generation to run up through (default 3)",
+            )
         stage.set_defaults(func=func)
 
     return parser
