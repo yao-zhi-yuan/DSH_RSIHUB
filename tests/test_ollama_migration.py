@@ -99,14 +99,17 @@ class OllamaMigrationTests(unittest.TestCase):
                 "OLLAMA_API_KEY": "ollama",
                 "OLLAMA_TARGET_MODEL": "qwen3:8b",
                 "UNRELATED_SECRET": "do-not-pass",
+                "EVOLVE_HARBOR_TASKS": "contract-clamp,contract-parse-size",
             },
             dsh_home="/logs/agent/dsh-home",
         )
         self.assertEqual(shutil.which("node", path=env["PATH"]), "/usr/local/bin/node")
         self.assertNotIn("UNRELATED_SECRET", env)
+        self.assertNotIn("EVOLVE_HARBOR_TASKS", env)
         self.assertEqual(env["OLLAMA_TARGET_MODEL"], "qwen3:8b")
         command = module.render_clean_command(["/repo/node_modules/.bin/dsh", "--version"], env)
         self.assertTrue(command.startswith("env -i "))
+        self.assertNotIn("EVOLVE_HARBOR_TASKS", command)
 
     def test_runtime_digest_covers_clean_environment_helper(self) -> None:
         spec = importlib.util.spec_from_file_location(

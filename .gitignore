@@ -7,6 +7,7 @@ vendor/
 experiment/
 .worktrees/
 reports/raw/
+reports/control/
 .venv/
 node_modules/
 __pycache__/
