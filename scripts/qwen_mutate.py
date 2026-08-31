@@ -141,6 +141,7 @@ def request_mutation(current: str, framework_prompt: str, evidence: str) -> tupl
     usage = body.get("usage") or {}
     usage_summary = {
         "wall_s": round(time.monotonic() - started, 3),
+        "request_count": 1,
         "prompt_tokens": usage.get("prompt_tokens"),
         "completion_tokens": usage.get("completion_tokens"),
         "total_tokens": usage.get("total_tokens"),
