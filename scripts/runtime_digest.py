@@ -11,19 +11,32 @@ from pathlib import Path
 
 
 ROOT = Path(__file__).resolve().parents[1]
+SEED_DIR = "seed"
 FILES = (
     "config/upstream-lock.json",
     "containers/evaluator/Dockerfile",
     "package-lock.json",
     "vendor/RSIHub/uv.lock",
-    "seed/agent.py",
-    "seed/runtime_env.py",
-    "seed/dsh-qwen.patch.yml",
     "scripts/ollama_config.py",
     "scripts/rsihub_qwen_prompt_mutate.py",
     "scripts/qwen_mutate.py",
     "patches/rsihub-run-plan-expected-trials.patch",
 )
+
+
+def seed_files() -> list[str]:
+    """Every regular file under seed/, by sorted POSIX relative path.
+
+    Hashing the whole tree keeps the runtime identity honest as the seed grows,
+    rather than tracking a hand-maintained list of individual seed modules.
+    """
+    root = ROOT / SEED_DIR
+    relatives = []
+    for path in root.rglob("*"):
+        if not path.is_file() or "__pycache__" in path.parts or path.suffix == ".pyc":
+            continue
+        relatives.append(path.relative_to(ROOT).as_posix())
+    return sorted(relatives)
 
 
 def command_version(command: list[str]) -> str:
@@ -33,7 +46,7 @@ def command_version(command: list[str]) -> str:
 
 def main() -> None:
     digest = hashlib.sha256()
-    for relative in FILES:
+    for relative in (*seed_files(), *FILES):
         path = ROOT / relative
         digest.update(relative.encode("utf-8") + b"\0")
         digest.update(path.read_bytes())
