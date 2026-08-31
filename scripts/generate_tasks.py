@@ -478,11 +478,17 @@ assert result_path.read_bytes().endswith(b'\\n')
 
 TEST_SH = """#!/bin/sh
 set -eu
-mkdir -p "$HARBOR_LOGS_DIR/verifier"
-if python3 "$HARBOR_TESTS_DIR/verify.py" "$HARBOR_WORKDIR"; then
-  printf '1\n' > "$HARBOR_LOGS_DIR/verifier/reward.txt"
+# Harbor uploads tests/ to /tests, runs the agent workspace at /app, and reads
+# the reward from /logs/verifier/reward.txt. These fixed paths are the real
+# Harbor contract; the audit harness overrides them via HARBOR_* for local runs.
+WORKDIR="${HARBOR_WORKDIR:-/app}"
+TESTS_DIR="${HARBOR_TESTS_DIR:-/tests}"
+LOGS_DIR="${HARBOR_LOGS_DIR:-/logs}"
+mkdir -p "$LOGS_DIR/verifier"
+if python3 "$TESTS_DIR/verify.py" "$WORKDIR"; then
+  printf '1\n' > "$LOGS_DIR/verifier/reward.txt"
 else
-  printf '0\n' > "$HARBOR_LOGS_DIR/verifier/reward.txt"
+  printf '0\n' > "$LOGS_DIR/verifier/reward.txt"
 fi
 """
 
