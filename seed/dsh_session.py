@@ -3,11 +3,11 @@
 DSH writes one JSONL event stream per session. This module folds that stream
 into the compact ``SessionEvidence`` the mutator consumes: ordered trajectory
 events shaped for RSIHub's existing trajectory reader, the final assistant
-response, and target token usage. Token totals come only from
-``assistant/message`` records because ``assistant/chunk`` records repeat the
-same response usage and would double-count it. All text is redacted and length
-bounded before it leaves this module so no secret or endpoint reaches the
-mutator.
+response, and target token usage. Token totals come from ``assistant/chunk``
+records of type ``usage`` because DSH emits one such chunk per model request
+with that request's own token counts; the ``assistant/message`` records carry
+no usage. All text is redacted and length bounded before it leaves this module
+so no secret or endpoint reaches the mutator.
 """
 
 from __future__ import annotations

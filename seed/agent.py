@@ -8,7 +8,7 @@ from pathlib import Path
 
 from harbor.agents.base import BaseAgent
 
-from .dsh_session import parse_session_files
+from .dsh_session import SessionEvidence, parse_session_files
 from .runtime_env import build_dsh_env, render_clean_command
 
 
@@ -63,25 +63,43 @@ class HarborAgent(BaseAgent):
             ],
             dsh_env,
         )
-        result = await environment.exec(
-            command=command,
-            cwd="/app",
-            env={},
-            timeout_sec=timeout,
-        )
+        # A slow or looping 8B run (DSH's own idle timeout, or the wall-clock
+        # cap) is a task failure, not an infrastructure fault: capture it and
+        # let the verifier score reward 0 instead of aborting the generation.
+        # Only a run that never reached the model (no usage evidence) fails
+        # closed below.
+        timed_out = False
+        try:
+            result = await environment.exec(
+                command=command,
+                cwd="/app",
+                env={},
+                timeout_sec=timeout,
+            )
+            return_code = result.return_code
+            # Harbor's exec may return None for either stream; coerce to "" so
+            # log capture and downstream parsing never crash on a missing stream.
+            stdout = result.stdout or ""
+            stderr = result.stderr or ""
+        except RuntimeError as exc:
+            # DockerEnvironment raises a plain RuntimeError on wall-clock
+            # timeout; re-raise anything else so real bugs stay visible.
+            if "timed out" not in str(exc).lower():
+                raise
+            timed_out = True
+            return_code = None
+            stdout = ""
+            stderr = str(exc)
 
         self.logs_dir.mkdir(parents=True, exist_ok=True)
-        # Harbor's exec may return None for either stream; coerce to "" so log
-        # capture and downstream parsing never crash on a missing stream.
-        stdout = result.stdout or ""
-        stderr = result.stderr or ""
         (self.logs_dir / "dsh.stdout.txt").write_text(stdout, encoding="utf-8")
         (self.logs_dir / "dsh.stderr.txt").write_text(stderr, encoding="utf-8")
         (self.logs_dir / "dsh-run.json").write_text(
             json.dumps(
                 {
                     "schema_version": 1,
-                    "exit_code": result.return_code,
+                    "exit_code": return_code,
+                    "timed_out": timed_out,
                     "configured_model": configured_model,
                 },
                 indent=2,
@@ -96,14 +114,24 @@ class HarborAgent(BaseAgent):
                 sessions_dir,
             )
 
-        # Collect trajectory and usage before raising so a nonzero DSH exit
-        # still yields the evidence the mutator learns from.
-        self._collect_evidence(context, sessions_dir, configured_model)
+        # Collect trajectory and usage before deciding, so a failed run still
+        # yields the evidence the mutator learns from and the usage the archive
+        # records.
+        evidence = self._collect_evidence(context, sessions_dir, configured_model)
 
-        if result.return_code != 0:
-            raise RuntimeError(f"DSH headless exited with code {result.return_code}")
+        # Fail closed only when the target never reached the model at all: no
+        # usage evidence on a nonzero or timed-out run means Ollama was
+        # unreachable, the binary was missing, or the container was broken.
+        # A run that produced at least one request but failed or timed out is a
+        # scoreable task failure the verifier will mark reward 0.
+        if (timed_out or return_code != 0) and evidence.usage.requests == 0:
+            detail = "timed out" if timed_out else f"exited with code {return_code}"
+            raise RuntimeError(
+                f"DSH headless {detail} without producing any model request; "
+                "treating as an infrastructure failure"
+            )
 
-    def _collect_evidence(self, context, sessions_dir: Path, configured_model: str) -> None:
+    def _collect_evidence(self, context, sessions_dir: Path, configured_model: str) -> SessionEvidence:
         session_files = sorted(sessions_dir.rglob("*.jsonl")) if sessions_dir.is_dir() else []
         sensitive = {
             value
@@ -129,3 +157,4 @@ class HarborAgent(BaseAgent):
                 "session_files": [str(path) for path in session_files],
             }
         )
+        return evidence
