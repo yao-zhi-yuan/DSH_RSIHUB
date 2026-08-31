@@ -92,6 +92,12 @@ def build_runtime_env(source: Mapping[str, str], *, root: Path) -> dict[str, str
             raise ValueError(f"missing required setting: {name}")
     env["DSH_BIN"] = str(root / "node_modules" / ".bin" / "dsh")
     env["EVOLVE_EXPERIMENT_ROOT"] = str(root)
+    # RSIHub's runtime auth contract requires an OpenAI-style credential for the
+    # HarborAgent. The DSH target actually talks to Ollama, so supply the
+    # non-secret Ollama compat key to satisfy preflight without a real secret;
+    # the agent itself routes through OLLAMA_* in its patch. Do not set
+    # OPENAI_BASE_URL: the workspace pins the endpoint digest for an unset URL.
+    env["OPENAI_API_KEY"] = source.get("OLLAMA_API_KEY", "ollama").strip() or "ollama"
     return env
 
 
@@ -186,10 +192,20 @@ def record_command(
 def _subprocess_env(runtime: Mapping[str, str]) -> dict[str, str]:
     import os
 
+    # The RSIHub venv bin holds the `harbor` CLI that evolve's dependency-tool
+    # preflight requires; prepend it so subprocesses resolve harbor alongside
+    # the host git/docker/uv already on PATH.
+    venv_bin = ROOT / "vendor" / "RSIHub" / ".venv" / "bin"
+    parent_path = os.environ.get("PATH", "")
+    path = f"{venv_bin}{os.pathsep}{parent_path}" if venv_bin.is_dir() else parent_path
     env = {
-        "PATH": os.environ.get("PATH", ""),
+        "PATH": path,
         "HOME": os.environ.get("HOME", ""),
         "LANG": os.environ.get("LANG", "C.UTF-8"),
+        # Keep RSIHub's archive mirror inside the repo. The default (~/.evolve)
+        # is outside the writable sandbox and fails with EPERM; a repo-local,
+        # gitignored home is writable and keeps the mirror inspectable.
+        "EVOLVE_HOME": str(ROOT / ".evolve-home"),
     }
     tmp = os.environ.get("TMPDIR")
     if tmp:

@@ -2,6 +2,7 @@
 .secrets/
 runs/
 workspaces/
+.evolve-home/
 sessions/
 vendor/
 experiment/
