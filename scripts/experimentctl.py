@@ -449,9 +449,20 @@ def cmd_retry(args: argparse.Namespace) -> int:
 def cmd_report(args: argparse.Namespace) -> int:
     """Regenerate the final audit bundle without model calls."""
     _raw, runtime, secrets = _load(require_models=False)
+    # build_report.py reads the frozen workspace evidence and writes the
+    # deliverable bundle (summary.json, report.md, manifest.sha256, and one
+    # candidate diff per generation). It never calls a model, so the report
+    # stage stays reproducible and offline.
     completed = record_command(
         "report",
-        [sys.executable, "-m", "evolve", "report", str(Path(args.workspace).expanduser())],
+        [
+            sys.executable,
+            str(ROOT / "scripts" / "build_report.py"),
+            "--workspace",
+            str(Path(args.workspace).expanduser()),
+            "--output",
+            str(ROOT / "reports"),
+        ],
         _subprocess_env(runtime),
         secrets=secrets,
     )

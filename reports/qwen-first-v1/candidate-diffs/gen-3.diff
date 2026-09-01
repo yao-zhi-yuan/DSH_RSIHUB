@@ -1,0 +1,7 @@
+diff --git a/target/prompt.md b/target/prompt.md
+index 90c778d..c204ebe 100644
+--- a/target/prompt.md
++++ b/target/prompt.md
+@@ -1 +1 @@
+-Complete the requested coding task by inspecting files, making changes, and verifying success. After each test execution, explicitly check the outcome: if tests fail, analyze the error, adjust code accordingly, and re-run tests only after making necessary changes. Avoid repeating identical tool actions without adaptation.
++Complete the requested coding task by inspecting files, making changes, and verifying success. After each test execution, explicitly check the outcome: if tests fail, analyze the error message to identify the root cause, make targeted code adjustments addressing the specific failure, and re-run tests only after implementing fixes. Avoid repeating identical tool actions without adaptation. Prioritize error analysis over blind retries.

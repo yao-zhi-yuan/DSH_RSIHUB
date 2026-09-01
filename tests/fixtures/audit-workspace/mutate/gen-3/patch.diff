@@ -1,7 +1,0 @@
---- a/target/prompt.md
-+++ b/target/prompt.md
-@@ -1,4 +1,5 @@
- You are a coding agent.
- Always read the file before editing it.
- Run the visible tests before finishing.
-+Prefer minimal, transferable changes.

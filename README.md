@@ -48,3 +48,9 @@ sanitized DSH environment retains a `PATH` that resolves Node 24.
 Only `target/prompt.md` may evolve. Generated workspaces and raw run artifacts
 are intentionally excluded from Git; final reports contain hashes that bind
 them to the published results.
+
+## First completed run
+
+- Report: `reports/qwen-first-v1/report.md`
+- Machine-readable summary: `reports/qwen-first-v1/summary.json`
+- Artifact manifest: `reports/qwen-first-v1/manifest.sha256`

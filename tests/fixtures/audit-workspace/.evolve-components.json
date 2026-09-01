@@ -1,0 +1,7 @@
+{
+  "evaluator_engine": "harbor",
+  "operators": {
+    "mutate": {"name": "rsihub_qwen_prompt_mutate.py", "stage": "mutate", "source": "script"}
+  },
+  "recipe": "dsh_hill_climb"
+}

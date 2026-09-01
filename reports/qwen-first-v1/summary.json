@@ -1,0 +1,235 @@
+{
+  "audit": {
+    "artifact_hashes": {},
+    "missing_artifacts": [],
+    "redactions": 0
+  },
+  "baseline": {
+    "gate": {
+      "expected_trials": 4,
+      "reason": "all required trials are scoreable",
+      "score": 0.0,
+      "scoreable_trials": 4,
+      "task_set_hash": "01395363893365ba591cdc2e92c96fec33adeb42a7607702ee64d5d902a37a73",
+      "task_set_members": [
+        "contract-normalize-tags",
+        "execution-money-total",
+        "verification-canonical-key",
+        "verification-redact-secrets"
+      ]
+    },
+    "sealed": {
+      "expected_trials": 4,
+      "reason": "all required trials are scoreable",
+      "score": 0.25,
+      "scoreable_trials": 4,
+      "task_set_hash": "83fbf3173f4e032aaa2bddb8a78edeeaa354ff6dfbc0f1881f1fc6e43bfa7d80",
+      "task_set_members": [
+        "artifact-parse-boolean",
+        "contract-clamp",
+        "contract-merge-intervals",
+        "execution-diff-policy"
+      ]
+    }
+  },
+  "experiment": {
+    "evaluator_engine": "harbor",
+    "experiment_id": "qwen-first-v1",
+    "mutator_operator": "rsihub_qwen_prompt_mutate.py",
+    "recipe": "dsh_hill_climb",
+    "target_model": "ollama/qwen3:8b"
+  },
+  "final": {
+    "champion_commit": "b7a8d5f7126094b13303a7e7586c69436fb3df89",
+    "champion_genid": "1",
+    "champion_score": 0.5,
+    "gate": {
+      "expected_trials": 4,
+      "reason": "all required trials are scoreable",
+      "score": 0.5,
+      "scoreable_trials": 4,
+      "task_set_hash": "01395363893365ba591cdc2e92c96fec33adeb42a7607702ee64d5d902a37a73",
+      "task_set_members": [
+        "contract-normalize-tags",
+        "execution-money-total",
+        "verification-canonical-key",
+        "verification-redact-secrets"
+      ]
+    },
+    "sealed": {
+      "expected_trials": 4,
+      "reason": "all required trials are scoreable",
+      "score": 0.5,
+      "scoreable_trials": 4,
+      "task_set_hash": "83fbf3173f4e032aaa2bddb8a78edeeaa354ff6dfbc0f1881f1fc6e43bfa7d80",
+      "task_set_members": [
+        "artifact-parse-boolean",
+        "contract-clamp",
+        "contract-merge-intervals",
+        "execution-diff-policy"
+      ]
+    }
+  },
+  "generations": [
+    {
+      "attempt": 1,
+      "became_champion": true,
+      "candidate_commit": "b7a8d5f7126094b13303a7e7586c69436fb3df89",
+      "gate": {
+        "expected_trials": 4,
+        "reason": "all required trials are scoreable",
+        "score": 0.5,
+        "scoreable_trials": 4,
+        "task_set_hash": "01395363893365ba591cdc2e92c96fec33adeb42a7607702ee64d5d902a37a73",
+        "task_set_members": [
+          "contract-normalize-tags",
+          "execution-money-total",
+          "verification-canonical-key",
+          "verification-redact-secrets"
+        ]
+      },
+      "generation": "1",
+      "mutation": {
+        "expected_effect": "Reduce failures in tasks with verification steps by ensuring agents analyze test results before re-running commands, breaking the cycle of repeated identical tool actions without adaptation.",
+        "hypothesis": "The agent's failure patterns stem from repeating test executions without analyzing outcomes. Adding explicit outcome checking and adaptive code adjustment steps will improve success rates by aligning with the passing example's verification\u6d41\u7a0b.",
+        "usage": {
+          "completion_tokens": 518,
+          "prompt_tokens": 6459,
+          "request_count": 1,
+          "total_tokens": 6977
+        }
+      },
+      "parent": "0",
+      "parent_rollout": {
+        "cache_tokens": 0,
+        "input_tokens": 139823,
+        "mean_reward": 0.25,
+        "output_tokens": 15952,
+        "total_tokens": 155775,
+        "trials": 4
+      },
+      "reason": "score 0.5 >= parent 0.0",
+      "task_vector": {
+        "contract-normalize-tags": 1.0,
+        "execution-money-total": 0.0,
+        "verification-canonical-key": 1.0,
+        "verification-redact-secrets": 0.0
+      },
+      "valid_parent": true,
+      "verdict": "keep"
+    },
+    {
+      "attempt": 1,
+      "became_champion": false,
+      "candidate_commit": "06e986656eabbd421507a6eedef8fd454dbd8e0c",
+      "gate": {
+        "expected_trials": 4,
+        "reason": "all required trials are scoreable",
+        "score": 0.0,
+        "scoreable_trials": 4,
+        "task_set_hash": "01395363893365ba591cdc2e92c96fec33adeb42a7607702ee64d5d902a37a73",
+        "task_set_members": [
+          "contract-normalize-tags",
+          "execution-money-total",
+          "verification-canonical-key",
+          "verification-redact-secrets"
+        ]
+      },
+      "generation": "2",
+      "mutation": {
+        "expected_effect": "The agent will adapt code formatting to fix syntax issues before re-running tests, preventing repeated verification failures from formatting errors.",
+        "hypothesis": "Adding explicit syntax validation steps will address the failure pattern where repeated writes with incorrect line continuation characters caused syntax errors in the module implementation.",
+        "usage": {
+          "completion_tokens": 687,
+          "prompt_tokens": 7136,
+          "request_count": 1,
+          "total_tokens": 7823
+        }
+      },
+      "parent": "1",
+      "parent_rollout": {
+        "cache_tokens": 0,
+        "input_tokens": 165892,
+        "mean_reward": 0.75,
+        "output_tokens": 14880,
+        "total_tokens": 180772,
+        "trials": 4
+      },
+      "reason": "score 0.0 < parent 0.5",
+      "task_vector": {
+        "contract-normalize-tags": 0.0,
+        "execution-money-total": 0.0,
+        "verification-canonical-key": 0.0,
+        "verification-redact-secrets": 0.0
+      },
+      "valid_parent": false,
+      "verdict": "discard"
+    },
+    {
+      "attempt": 2,
+      "became_champion": false,
+      "candidate_commit": "f5ca2f9f8cb9531528c04f9ff4c3ebc6ceb63c36",
+      "gate": {
+        "expected_trials": 4,
+        "reason": "all required trials are scoreable",
+        "score": 0.5,
+        "scoreable_trials": 4,
+        "task_set_hash": "01395363893365ba591cdc2e92c96fec33adeb42a7607702ee64d5d902a37a73",
+        "task_set_members": [
+          "contract-normalize-tags",
+          "execution-money-total",
+          "verification-canonical-key",
+          "verification-redact-secrets"
+        ]
+      },
+      "generation": "3",
+      "mutation": {
+        "expected_effect": "Fewer repeated edit actions, better handling of input validation errors (like ' 1.5 m' parsing), and resolution of unhashable type errors through targeted code adjustments based on test failure diagnostics.",
+        "hypothesis": "Adding explicit error analysis requirements will reduce redundant edits and improve handling of format/parse errors and unhashable type failures by addressing root causes rather than repeating unchanged code modifications.",
+        "usage": {
+          "completion_tokens": 628,
+          "prompt_tokens": 5835,
+          "request_count": 1,
+          "total_tokens": 6463
+        }
+      },
+      "parent": "1",
+      "parent_rollout": {
+        "cache_tokens": 0,
+        "input_tokens": 122642,
+        "mean_reward": 0.333333,
+        "output_tokens": 15596,
+        "total_tokens": 138238,
+        "trials": 4
+      },
+      "reason": "score 0.5 >= parent 0.5",
+      "task_vector": {
+        "contract-normalize-tags": 1.0,
+        "execution-money-total": 0.0,
+        "verification-canonical-key": 0.0,
+        "verification-redact-secrets": 1.0
+      },
+      "valid_parent": true,
+      "verdict": "keep"
+    }
+  ],
+  "limitations": [
+    "Stage 1 prompt-only run: the mutator may edit only target/prompt.md.",
+    "Scores compare only within a fixed task-set cohort (stable task_set_hash).",
+    "Gate and Sealed cohorts are disjoint task sets and are not directly comparable."
+  ],
+  "resources": {
+    "cost_usd": 0.0,
+    "mutator": {
+      "request_count": 3,
+      "total_tokens": 21263
+    },
+    "target": {
+      "input_tokens": 428357,
+      "output_tokens": 46428,
+      "total_tokens": 474785
+    },
+    "wall_s": 6646.117
+  },
+  "schema_version": 2
+}
