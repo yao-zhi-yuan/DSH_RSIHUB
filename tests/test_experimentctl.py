@@ -164,5 +164,21 @@ class TrainScheduleTests(unittest.TestCase):
         self.assertEqual(len(covered), 8)
 
 
+class ParserTests(unittest.TestCase):
+    """The control plane must expose retry with a positional generation id."""
+
+    def test_retry_subcommand_binds_genid_and_handler(self) -> None:
+        args = experimentctl.build_parser().parse_args(
+            ["retry", "--workspace", "ws", "3"]
+        )
+        self.assertIs(args.func, experimentctl.cmd_retry)
+        self.assertEqual(args.workspace, "ws")
+        self.assertEqual(args.genid, "3")
+
+    def test_retry_requires_genid(self) -> None:
+        with self.assertRaises(SystemExit):
+            experimentctl.build_parser().parse_args(["retry", "--workspace", "ws"])
+
+
 if __name__ == "__main__":
     unittest.main()

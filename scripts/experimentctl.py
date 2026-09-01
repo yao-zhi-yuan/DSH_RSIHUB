@@ -420,6 +420,32 @@ def cmd_evolve(args: argparse.Namespace) -> int:
     return _run_generations(args, "evolve", int(getattr(args, "max_generations", 3)))
 
 
+def cmd_retry(args: argparse.Namespace) -> int:
+    """Retry one terminal (e.g. infrastructure_failed) generation.
+
+    A transient model stall can leave a generation ``infrastructure_failed``;
+    ``evolve run`` treats that record as terminal and will not redo it. This
+    records a fresh certified attempt for the named generation through the same
+    fixed env allowlist and command recording the other stages use.
+    """
+    _raw, runtime, secrets = _load(require_models=True)
+    completed = record_command(
+        "retry",
+        [
+            sys.executable,
+            "-m",
+            "evolve",
+            "retry",
+            str(Path(args.workspace).expanduser()),
+            str(args.genid),
+        ],
+        _evolve_env(runtime, secrets),
+        secrets=secrets,
+    )
+    print(f"retry: {'ok' if completed.returncode == 0 else 'failed'}")
+    return completed.returncode
+
+
 def cmd_report(args: argparse.Namespace) -> int:
     """Regenerate the final audit bundle without model calls."""
     _raw, runtime, secrets = _load(require_models=False)
@@ -451,6 +477,7 @@ def build_parser() -> argparse.ArgumentParser:
         ("canary", cmd_canary, "run one target task and the local isolation probe"),
         ("baseline", cmd_baseline, "run generation zero and require Gate plus Sealed evidence"),
         ("evolve", cmd_evolve, "run through generation three"),
+        ("retry", cmd_retry, "retry a terminal generation as a new certified attempt"),
         ("report", cmd_report, "regenerate the final audit bundle without model calls"),
     ):
         stage = sub.add_parser(name, help=help_text)
@@ -465,6 +492,10 @@ def build_parser() -> argparse.ArgumentParser:
                 dest="max_generations",
                 help="highest generation to run up through (default 3)",
             )
+        if name == "retry":
+            # retry targets one terminal generation (e.g. a transient
+            # infrastructure_failed) that evolve run will not redo on its own.
+            stage.add_argument("genid", help="generation id to retry (e.g. 3)")
         stage.set_defaults(func=func)
 
     return parser
