@@ -48,6 +48,16 @@ class BuildReportTests(unittest.TestCase):
         self.assertIn("outcome checking", gen1["mutation"]["hypothesis"])
         self.assertTrue(gen1["mutation"]["expected_effect"])
 
+    def test_summary_embeds_diff_and_disk(self) -> None:
+        report = build_report.build_report(self._workspace())
+        # Each generation embeds its redacted diff so downstream readers (the
+        # visualization) need only summary.json.
+        for generation in report["generations"]:
+            self.assertIn("diff --git", generation["diff"])
+        self.assertNotIn("SECRETLEAK12345", report["generations"][1]["diff"])
+        self.assertIsInstance(report["resources"]["disk_bytes"], int)
+        self.assertGreater(report["resources"]["disk_bytes"], 0)
+
     def test_missing_referenced_file_fails_with_path(self) -> None:
         workspace = self._workspace()
         (workspace / "runs" / "gen-2" / "mutate" / "patch.diff").unlink()

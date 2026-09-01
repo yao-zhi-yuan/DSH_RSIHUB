@@ -1,0 +1,80 @@
+{
+  "schema_version": 2,
+  "experiment": {
+    "experiment_id": "qwen-first-v1",
+    "recipe": "dsh_hill_climb",
+    "target_model": "ollama/qwen3:8b",
+    "mutator_operator": "rsihub_qwen_prompt_mutate.py",
+    "evaluator_engine": "harbor"
+  },
+  "baseline": {
+    "gate": {"score": 0.0, "expected_trials": 4, "scoreable_trials": 4, "task_set_hash": "gatehash", "task_set_members": ["t-a", "t-b", "t-c", "t-d"], "reason": "all required trials are scoreable"},
+    "sealed": {"score": 0.25, "expected_trials": 4, "scoreable_trials": 4, "task_set_hash": "sealedhash", "task_set_members": ["s-a", "s-b", "s-c", "s-d"], "reason": "all required trials are scoreable"}
+  },
+  "generations": [
+    {
+      "generation": "1",
+      "parent": "0",
+      "candidate_commit": "aaaa1111",
+      "attempt": 1,
+      "gate": {"score": 0.5, "expected_trials": 4, "scoreable_trials": 4, "task_set_hash": "gatehash", "task_set_members": ["t-a", "t-b", "t-c", "t-d"], "reason": "all required trials are scoreable"},
+      "task_vector": {"t-a": 1.0, "t-b": 0.0, "t-c": 1.0, "t-d": 0.0},
+      "verdict": "keep",
+      "valid_parent": true,
+      "reason": "score 0.5 >= parent 0.0",
+      "became_champion": true,
+      "diff": "diff --git a/target/prompt.md b/target/prompt.md\n@@ -1 +1 @@\n-Complete the task.\n+Complete the task; check outcomes and adapt. token=secret-value\n",
+      "mutation": {"hypothesis": "Adding explicit outcome checking improves verification tasks.", "expected_effect": "Fewer repeated tool actions without adaptation.", "usage": {"prompt_tokens": 6459, "completion_tokens": 518, "total_tokens": 6977, "request_count": 1}},
+      "parent_rollout": {"mean_reward": 0.25, "trials": 4, "input_tokens": 3000, "output_tokens": 300, "cache_tokens": 0, "total_tokens": 3300}
+    },
+    {
+      "generation": "2",
+      "parent": "1",
+      "candidate_commit": "bbbb2222",
+      "attempt": 1,
+      "gate": {"score": 0.0, "expected_trials": 4, "scoreable_trials": 4, "task_set_hash": "gatehash", "task_set_members": ["t-a", "t-b", "t-c", "t-d"], "reason": "all required trials are scoreable"},
+      "task_vector": {"t-a": 0.0, "t-b": 0.0, "t-c": 0.0, "t-d": 0.0},
+      "verdict": "discard",
+      "valid_parent": false,
+      "reason": "score 0.0 < parent 0.5",
+      "became_champion": false,
+      "diff": "diff --git a/target/prompt.md b/target/prompt.md\n@@ -1 +1 @@\n-Complete the task; check outcomes and adapt.\n+Complete the task; verify syntax and line continuation.\n",
+      "mutation": {"hypothesis": "Adding syntax validation addresses line-continuation failures.", "expected_effect": "Agent fixes formatting before re-running tests.", "usage": {"prompt_tokens": 7136, "completion_tokens": 687, "total_tokens": 7823, "request_count": 1}},
+      "parent_rollout": {"mean_reward": 0.5, "trials": 4, "input_tokens": 4000, "output_tokens": 400, "cache_tokens": 0, "total_tokens": 4400}
+    },
+    {
+      "generation": "3",
+      "parent": "1",
+      "candidate_commit": "cccc3333",
+      "attempt": 2,
+      "gate": {"score": 0.5, "expected_trials": 4, "scoreable_trials": 4, "task_set_hash": "gatehash", "task_set_members": ["t-a", "t-b", "t-c", "t-d"], "reason": "all required trials are scoreable"},
+      "task_vector": {"t-a": 1.0, "t-b": 1.0, "t-c": 0.0, "t-d": 0.0},
+      "verdict": "keep",
+      "valid_parent": true,
+      "reason": "score 0.5 >= parent 0.5",
+      "became_champion": false,
+      "diff": "diff --git a/target/prompt.md b/target/prompt.md\n@@ -1 +1 @@\n-Complete the task; verify syntax.\n+Complete the task; analyze the error root cause first.\n",
+      "mutation": {"hypothesis": "Explicit error analysis reduces redundant edits.", "expected_effect": "Better handling of parse and type errors via targeted fixes.", "usage": {"prompt_tokens": 5835, "completion_tokens": 628, "total_tokens": 6463, "request_count": 1}},
+      "parent_rollout": {"mean_reward": 0.5, "trials": 4, "input_tokens": 3400, "output_tokens": 340, "cache_tokens": 0, "total_tokens": 3740}
+    }
+  ],
+  "final": {
+    "champion_genid": "1",
+    "champion_score": 0.5,
+    "champion_commit": "aaaa1111",
+    "gate": {"score": 0.5, "expected_trials": 4, "scoreable_trials": 4, "task_set_hash": "gatehash", "task_set_members": ["t-a", "t-b", "t-c", "t-d"], "reason": "all required trials are scoreable"},
+    "sealed": {"score": 0.5, "expected_trials": 4, "scoreable_trials": 4, "task_set_hash": "sealedhash", "task_set_members": ["s-a", "s-b", "s-c", "s-d"], "reason": "all required trials are scoreable"}
+  },
+  "resources": {
+    "target": {"input_tokens": 10400, "output_tokens": 1040, "total_tokens": 11440},
+    "mutator": {"request_count": 3, "total_tokens": 21263},
+    "wall_s": 6646.117,
+    "disk_bytes": 18161258,
+    "cost_usd": 0.0
+  },
+  "audit": {"artifact_hashes": {}, "missing_artifacts": [], "redactions": 0},
+  "limitations": [
+    "Stage 1 prompt-only run: the mutator may edit only target/prompt.md.",
+    "Scores compare only within a fixed task-set cohort (stable task_set_hash)."
+  ]
+}

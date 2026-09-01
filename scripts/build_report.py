@@ -245,6 +245,20 @@ def _target_rollout(workspace: Path, generation: str) -> dict[str, Any]:
     }
 
 
+def _tree_bytes(root: Path) -> int:
+    """Return the total size in bytes of all files under ``root`` (0 if absent)."""
+    if not root.is_dir():
+        return 0
+    total = 0
+    for path in root.rglob("*"):
+        if path.is_file() and not path.is_symlink():
+            try:
+                total += path.stat().st_size
+            except OSError:
+                continue
+    return total
+
+
 def build_report(workspace: Path) -> dict[str, Any]:
     """Read a completed workspace and return the audit summary (no writes)."""
     workspace = Path(workspace).resolve()
@@ -268,7 +282,8 @@ def build_report(workspace: Path) -> dict[str, Any]:
             raise ReportError(f"mismatched Gate task set in generation {name}")
         decision = _gate_record(rows, name)
         reason, _ = _redact(str(decision.get("reason") or ""))
-        _require_file(workspace, f"runs/gen-{name}/mutate/patch.diff")
+        diff_path = _require_file(workspace, f"runs/gen-{name}/mutate/patch.diff")
+        diff_text, _ = _redact(diff_path.read_text(encoding="utf-8"))
         generations.append(
             {
                 "generation": name,
@@ -281,6 +296,7 @@ def build_report(workspace: Path) -> dict[str, Any]:
                 "valid_parent": bool(decision.get("valid_parent")),
                 "reason": reason,
                 "became_champion": str(champion.get("genid")) == name,
+                "diff": diff_text,
                 "mutation": _mutator_output(workspace, name),
                 "parent_rollout": _target_rollout(workspace, name),
             }
@@ -304,6 +320,7 @@ def build_report(workspace: Path) -> dict[str, Any]:
             cost = row.get("cost")
             if isinstance(cost, dict) and isinstance(cost.get("wall_s"), (int, float)):
                 wall_s += float(cost["wall_s"])
+    disk_bytes = _tree_bytes(workspace / "runs")
 
     final = {
         "champion_genid": champion_genid,
@@ -333,6 +350,7 @@ def build_report(workspace: Path) -> dict[str, Any]:
             },
             "mutator": {"request_count": mutator_requests, "total_tokens": mutator_tokens},
             "wall_s": round(wall_s, 3),
+            "disk_bytes": disk_bytes,
             "cost_usd": 0.0,
         },
         "audit": {"artifact_hashes": {}, "missing_artifacts": [], "redactions": 0},
@@ -437,11 +455,12 @@ def write_report(workspace: Path, output_root: Path) -> dict[str, Any]:
     diffs.mkdir(parents=True, exist_ok=True)
 
     written: list[str] = []
-    for name in GENERATIONS:
-        source = workspace / "runs" / f"gen-{name}" / "mutate" / "patch.diff"
-        redacted, _ = _redact(source.read_text(encoding="utf-8"))
+    for generation in report["generations"]:
+        name = generation["generation"]
+        # The diff text is already redacted in build_report; reuse it so the
+        # standalone file and the summary embed stay byte-identical.
         target = diffs / f"gen-{name}.diff"
-        target.write_text(redacted, encoding="utf-8")
+        target.write_text(generation["diff"], encoding="utf-8")
         written.append(f"candidate-diffs/gen-{name}.diff")
 
     markdown, redactions = _render_markdown(report)
