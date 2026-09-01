@@ -1110,7 +1110,7 @@ dependency tools, and runtime environment all pass without a model call.
 - Generate: `workspaces/qwen-first-v1/best_ever.json`
 - Generate: `reports/control/**`
 
-- [ ] **Step 1: Certify baseline Gate and Sealed**
+- [x] **Step 1: Certify baseline Gate and Sealed**
 
 ```bash
 python3 scripts/experimentctl.py baseline --workspace workspaces/qwen-first-v1
@@ -1123,7 +1123,7 @@ Expected:
 - all task/runtime/evaluator fingerprints are present;
 - `best_ever.json` names generation zero.
 
-- [ ] **Step 2: Run all three generations in one resumable driver call**
+- [x] **Step 2: Run all three generations in one resumable driver call**
 
 ```bash
 python3 scripts/experimentctl.py evolve --workspace workspaces/qwen-first-v1
@@ -1139,7 +1139,7 @@ Expected:
 - Ollama daemon, model, or host-resource failure stops immediately without an
   automatic retry.
 
-- [ ] **Step 3: Verify RSIHub state**
+- [x] **Step 3: Verify RSIHub state**
 
 Run with the same exported `EVOLVE_HOME` used by the launcher:
 

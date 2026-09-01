@@ -1029,7 +1029,7 @@ python3 scripts/experimentctl.py preflight --workspace workspaces/qwen-first-v1
 - 生成：`workspaces/qwen-first-v1/best_ever.json`
 - 生成：`reports/control/**`
 
-- [ ] **步骤 1：认证 baseline 的 Gate 与 Sealed**
+- [x] **步骤 1：认证 baseline 的 Gate 与 Sealed**
 
 ```bash
 python3 scripts/experimentctl.py baseline --workspace workspaces/qwen-first-v1
@@ -1042,7 +1042,7 @@ python3 scripts/experimentctl.py baseline --workspace workspaces/qwen-first-v1
 - 所有 task/runtime/evaluator 指纹齐备；
 - `best_ever.json` 指向第 0 代。
 
-- [ ] **步骤 2：用一次可恢复的驱动调用跑完全部三代**
+- [x] **步骤 2：用一次可恢复的驱动调用跑完全部三代**
 
 ```bash
 python3 scripts/experimentctl.py evolve --workspace workspaces/qwen-first-v1
@@ -1057,7 +1057,7 @@ python3 scripts/experimentctl.py evolve --workspace workspaces/qwen-first-v1
 - 最终 champion 有一个四 trial 的 Sealed 锚点；
 - Ollama 守护进程、模型或宿主资源故障立即停止，且不自动重试。
 
-- [ ] **步骤 3：验证 RSIHub 状态**
+- [x] **步骤 3：验证 RSIHub 状态**
 
 用与启动器相同的、已导出的 `EVOLVE_HOME` 运行：
 
