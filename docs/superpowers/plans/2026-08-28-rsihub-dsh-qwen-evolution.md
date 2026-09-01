@@ -43,7 +43,7 @@ disk), and the mutator's hypothesis / expected_effect against actual outcomes.
 - Create: `README.md`
 - Track: `.env.example`, `config/`, `package.json`, `package-lock.json`, `patches/`, `recipes/`, `scripts/`, `seed/`, `tasks/`, `docs/`
 
-- [ ] **Step 1: Extend generated-state exclusions**
+- [x] **Step 1: Extend generated-state exclusions**
 
 Add these anchored entries while preserving the existing secret and dependency
 rules:
@@ -53,7 +53,7 @@ rules:
 /reports/raw/
 ```
 
-- [ ] **Step 2: Document the repository entry points**
+- [x] **Step 2: Document the repository entry points**
 
 Create `README.md` with these commands and constraints:
 
@@ -81,7 +81,7 @@ The runner uses only the configured local Ollama daemon.
 Only `target/prompt.md` may evolve.
 ```
 
-- [ ] **Step 3: Check for accidental credentials before staging**
+- [x] **Step 3: Check for accidental credentials before staging**
 
 Run:
 
@@ -93,7 +93,7 @@ rg -n --hidden \
 
 Expected: no literal credential values.
 
-- [ ] **Step 4: Track the existing reproducibility inputs**
+- [x] **Step 4: Track the existing reproducibility inputs**
 
 Run:
 
@@ -106,7 +106,7 @@ git status --short
 Expected: `.env`, `vendor/`, `experiment/`, `runs/`, and `workspaces/` are not
 staged.
 
-- [ ] **Step 5: Commit the source baseline**
+- [x] **Step 5: Commit the source baseline**
 
 ```bash
 git commit -m "chore: checkpoint Qwen evolution scaffold"
@@ -120,7 +120,7 @@ git commit -m "chore: checkpoint Qwen evolution scaffold"
 - Modify: `scripts/generate_tasks.py`
 - Regenerate: `tasks/synthetic-16/**`
 
-- [ ] **Step 1: Write regression tests for the three known defects**
+- [x] **Step 1: Write regression tests for the three known defects**
 
 Create `tests/test_task_dataset.py` with tests that:
 
@@ -172,7 +172,7 @@ class GeneratedTaskTests(unittest.TestCase):
         self.assertIn(r"""summarize_jsonl('{"value":2}\n')""", visible)
 ```
 
-- [ ] **Step 2: Run the regression tests and confirm RED**
+- [x] **Step 2: Run the regression tests and confirm RED**
 
 Run:
 
@@ -182,7 +182,7 @@ python3 -m unittest tests.test_task_dataset -v
 
 Expected: syntax and unique-word assertions fail against the current generator.
 
-- [ ] **Step 3: Fix only the generator defects**
+- [x] **Step 3: Fix only the generator defects**
 
 In `scripts/generate_tasks.py`:
 
@@ -212,7 +212,7 @@ for value in ('', '/etc/passwd', '../x', 'a/../../x', r'C:\\temp\\x'):
 dockerfile = "FROM dsh-ollama-eval:node24-dsh011rc2\nWORKDIR /app\nCOPY . /app\n"
 ```
 
-- [ ] **Step 4: Regenerate and verify GREEN**
+- [x] **Step 4: Regenerate and verify GREEN**
 
 Run:
 
@@ -223,7 +223,7 @@ python3 -m unittest tests.test_task_dataset -v
 
 Expected: all regression tests pass and exactly 16 task directories exist.
 
-- [ ] **Step 5: Add the full dataset auditor**
+- [x] **Step 5: Add the full dataset auditor**
 
 Implement `scripts/audit_tasks.py` with:
 
@@ -457,7 +457,7 @@ For every task, invoke `tests/test.sh` with `HARBOR_WORKDIR`,
 reward `1`, and process exit `0`. Hash each complete task tree using sorted
 relative paths, modes, and bytes.
 
-- [ ] **Step 6: Add auditor behavior tests**
+- [x] **Step 6: Add auditor behavior tests**
 
 Extend `tests/test_task_dataset.py` to assert:
 
@@ -479,7 +479,7 @@ self.assertEqual(
 Tamper one generated verifier and assert that `failed_checks` names that task
 and reports `verifier_syntax`.
 
-- [ ] **Step 7: Run the complete dataset audit**
+- [x] **Step 7: Run the complete dataset audit**
 
 ```bash
 python3 -m unittest tests.test_task_dataset -v
@@ -489,7 +489,7 @@ python3 scripts/audit_tasks.py --output reports/preflight/task-audit.json
 Expected: 16 tasks, zero failed checks, all initial rewards 0, all oracle
 rewards 1.
 
-- [ ] **Step 8: Commit**
+- [x] **Step 8: Commit**
 
 ```bash
 git add scripts/generate_tasks.py scripts/audit_tasks.py tests/test_task_dataset.py tasks/synthetic-16 reports/preflight/task-audit.json
@@ -505,7 +505,7 @@ git commit -m "test: certify synthetic task dataset"
 - Modify: `seed/agent.py`
 - Modify: `scripts/runtime_digest.py`
 
-- [ ] **Step 1: Add a sanitized DSH session fixture**
+- [x] **Step 1: Add a sanitized DSH session fixture**
 
 Create `tests/fixtures/dsh-session.jsonl` containing one user message, two
 assistant messages, one tool call/result pair, and these non-duplicated usage
@@ -519,7 +519,7 @@ records:
 {"type":"assistant/message","seq":8,"data":{"message":{"role":"assistant","content":[{"type":"text","text":"Done."}],"usage":{"inputTokens":120,"outputTokens":15,"cacheReadTokens":50}}}}
 ```
 
-- [ ] **Step 2: Write failing parser tests**
+- [x] **Step 2: Write failing parser tests**
 
 Create `tests/test_dsh_session.py` and assert:
 
@@ -540,7 +540,7 @@ self.assertIn("[REDACTED]", json.dumps(evidence.events))
 Also test malformed JSONL, duplicate `assistant/chunk` usage events, absent
 usage, and bearer-token/endpoint redaction.
 
-- [ ] **Step 3: Run parser tests and confirm RED**
+- [x] **Step 3: Run parser tests and confirm RED**
 
 ```bash
 python3 -m unittest tests.test_dsh_session -v
@@ -548,7 +548,7 @@ python3 -m unittest tests.test_dsh_session -v
 
 Expected: import failure because `seed.dsh_session` does not exist.
 
-- [ ] **Step 4: Implement the parser**
+- [x] **Step 4: Implement the parser**
 
 Implement these stable interfaces in `seed/dsh_session.py`:
 
@@ -583,7 +583,7 @@ Count usage only from `assistant/message.data.message.usage`, because
 events accepted by RSIHub's existing trajectory reader. Bound message,
 argument, and observation lengths.
 
-- [ ] **Step 5: Connect parser output to Harbor**
+- [x] **Step 5: Connect parser output to Harbor**
 
 In `seed/agent.py`:
 
@@ -596,13 +596,13 @@ In `seed/agent.py`:
 - set metadata keys `request_count`, `configured_model`, and `session_files`;
 - perform collection before raising for a nonzero DSH exit.
 
-- [ ] **Step 6: Make the runtime digest cover the complete seed**
+- [x] **Step 6: Make the runtime digest cover the complete seed**
 
 Replace individual seed entries in `scripts/runtime_digest.py` with sorted,
 recursive hashing of every regular file under `seed/`, while continuing to
 hash lockfiles, mutator scripts, and RSIHub patch files.
 
-- [ ] **Step 7: Verify and commit**
+- [x] **Step 7: Verify and commit**
 
 ```bash
 python3 -m unittest tests.test_dsh_session -v
@@ -619,7 +619,7 @@ git commit -m "feat: retain DSH trajectories and token usage"
 - Modify: `scripts/rsihub_qwen_prompt_mutate.py`
 - Modify: `scripts/qwen_mutate.py`
 
-- [ ] **Step 1: Write failing evidence-handoff tests**
+- [x] **Step 1: Write failing evidence-handoff tests**
 
 Create `tests/test_mutation_operator.py` with a temporary `run_dir` containing
 `feedback/evidence/selected.md` and assert:
@@ -639,7 +639,7 @@ Add a test where the selected evidence contains task identifiers and
 credentials; assert credentials are redacted while task evidence remains
 available to the trusted mutator.
 
-- [ ] **Step 2: Write failing usage propagation tests**
+- [x] **Step 2: Write failing usage propagation tests**
 
 Test a successful subprocess output ending with:
 
@@ -662,13 +662,13 @@ Assert the operator `usage.json` equals:
 Malformed or missing usage must make the mutate stage fail rather than silently
 recording zero.
 
-- [ ] **Step 3: Run tests and confirm RED**
+- [x] **Step 3: Run tests and confirm RED**
 
 ```bash
 PYTHONPATH=vendor/RSIHub/src python3 -m unittest tests.test_mutation_operator -v
 ```
 
-- [ ] **Step 4: Implement evidence and usage handling**
+- [x] **Step 4: Implement evidence and usage handling**
 
 In `scripts/rsihub_qwen_prompt_mutate.py`, add:
 
@@ -690,7 +690,7 @@ In `scripts/qwen_mutate.py`, keep `temperature=0`, enforce the existing
 80–12000 character range and forbidden terms, and include a stable
 `request_count: 1` in its usage object.
 
-- [ ] **Step 5: Verify and commit**
+- [x] **Step 5: Verify and commit**
 
 ```bash
 PYTHONPATH=vendor/RSIHub/src python3 -m unittest tests.test_mutation_operator -v
@@ -712,7 +712,7 @@ git commit -m "feat: bind mutation evidence and usage"
 - Modify: `seed/dsh-qwen.patch.yml`
 - Modify: `config/dsh-qwen.patch.yml`
 
-- [ ] **Step 1: Write failing environment tests**
+- [x] **Step 1: Write failing environment tests**
 
 Create `tests/test_experimentctl.py` and assert:
 
@@ -737,13 +737,13 @@ self.assertEqual(env["EVOLVE_EXPERIMENT_ROOT"], "/repo")
 Test missing or non-loopback Ollama URLs, wrong model identifiers, a stopped
 daemon, a missing model, and malformed OpenAI-compatible responses.
 
-- [ ] **Step 2: Run tests and confirm RED**
+- [x] **Step 2: Run tests and confirm RED**
 
 ```bash
 python3 -m unittest tests.test_experimentctl -v
 ```
 
-- [ ] **Step 3: Implement the repository control plane**
+- [x] **Step 3: Implement the repository control plane**
 
 Implement these commands in `scripts/experimentctl.py`:
 
@@ -777,7 +777,7 @@ The script must:
 - stop on the first failed gate;
 - never retry a model request automatically.
 
-- [ ] **Step 4: Sanitize the DSH process environment**
+- [x] **Step 4: Sanitize the DSH process environment**
 
 Build the DSH command in `seed/agent.py` using `env -i` and only:
 
@@ -792,7 +792,7 @@ the model-operated DSH process. Add a model-free test that executes
 `env -i PATH=<sanitized-path> node --version` and require it to resolve the
 pinned Node 24.15.0 binary inside the evaluator image before any DSH canary.
 
-- [ ] **Step 5: Configure both local model roles**
+- [x] **Step 5: Configure both local model roles**
 
 Use these local defaults in `.env.example`:
 
@@ -821,7 +821,7 @@ set it with `launchctl setenv OLLAMA_NUM_PARALLEL 2` and restart Ollama after
 downloads finish. Preflight must reject `n_concurrent: 2` when the server was
 not started with matching parallelism.
 
-- [ ] **Step 6: Verify and commit**
+- [x] **Step 6: Verify and commit**
 
 ```bash
 python3 -m unittest tests.test_experimentctl -v
@@ -838,7 +838,7 @@ git commit -m "feat: run both experiment roles through Ollama"
 - Create: `tests/test_isolation_canary.py`
 - Modify: `scripts/experimentctl.py`
 
-- [ ] **Step 1: Write failing canary-result tests**
+- [x] **Step 1: Write failing canary-result tests**
 
 Test the pure result classifier with:
 
@@ -861,13 +861,13 @@ Require the canary artifact to record the attempted path, session hash,
 configured model, Ollama model digest, token usage, and whether the sentinel
 appeared.
 
-- [ ] **Step 2: Run tests and confirm RED**
+- [x] **Step 2: Run tests and confirm RED**
 
 ```bash
 python3 -m unittest tests.test_isolation_canary -v
 ```
 
-- [ ] **Step 3: Implement the live canary**
+- [x] **Step 3: Implement the live canary**
 
 `scripts/isolation_canary.py` must create a temporary task workspace with a
 random sentinel in a sibling verifier directory, invoke DSH through the same
@@ -890,7 +890,7 @@ including `qwen3:14b`, must start a new experiment with a new runtime identity;
 7B and 30B models are outside this experiment and must not be pulled
 implicitly.
 
-- [ ] **Step 4: Verify and commit**
+- [x] **Step 4: Verify and commit**
 
 ```bash
 python3 -m unittest tests.test_isolation_canary -v
@@ -907,7 +907,7 @@ git commit -m "test: gate local evaluator confidentiality"
 - Create: `tests/test_build_report.py`
 - Create: `reports/README.md`
 
-- [ ] **Step 1: Write failing report tests**
+- [x] **Step 1: Write failing report tests**
 
 Create a minimal fixture with baseline, three terminal generations, Gate and
 Sealed evaluations, mutation diffs, and usage. Assert:
@@ -926,13 +926,13 @@ Delete one referenced file and assert report construction fails with its
 relative path. Add a credential-shaped string to a fixture and assert the
 published Markdown contains only `[REDACTED]`.
 
-- [ ] **Step 2: Run tests and confirm RED**
+- [x] **Step 2: Run tests and confirm RED**
 
 ```bash
 python3 -m unittest tests.test_build_report -v
 ```
 
-- [ ] **Step 3: Implement deterministic report generation**
+- [x] **Step 3: Implement deterministic report generation**
 
 `scripts/build_report.py` reads but never changes a workspace. It writes:
 
@@ -972,7 +972,7 @@ Reject incomplete expected trials, uncertified receipts, mismatched task sets,
 missing generations, absent final Sealed evidence, malformed usage, or hashes
 that do not match.
 
-- [ ] **Step 4: Verify and commit**
+- [x] **Step 4: Verify and commit**
 
 ```bash
 python3 -m unittest tests.test_build_report -v
@@ -986,7 +986,7 @@ git commit -m "feat: generate auditable evolution report"
 **Files:**
 - Modify only if a failing test requires it: files introduced in Tasks 2–7
 
-- [ ] **Step 1: Run all outer-repository tests**
+- [x] **Step 1: Run all outer-repository tests**
 
 ```bash
 python3 -m unittest discover -s tests -v
@@ -994,7 +994,7 @@ python3 -m unittest discover -s tests -v
 
 Expected: all tests pass with no network calls.
 
-- [ ] **Step 2: Validate tasks and configuration**
+- [x] **Step 2: Validate tasks and configuration**
 
 ```bash
 python3 scripts/experimentctl.py audit
@@ -1005,7 +1005,7 @@ git -C vendor/RSIHub apply --reverse --check --unidiff-zero ../../patches/rsihub
 Expected: task audit passes, recipe is valid, and reverse patch check proves the
 required RSIHub patch is already applied.
 
-- [ ] **Step 3: Verify the frozen Train schedule covers all eight tasks**
+- [x] **Step 3: Verify the frozen Train schedule covers all eight tasks**
 
 Add an assertion to `tests/test_experimentctl.py` that computes generation
 shuffle selections for generations 1–3 and verifies their union equals the
@@ -1017,7 +1017,7 @@ python3 -m unittest tests.test_experimentctl -v
 
 Expected: eight distinct Train task names are covered across three generations.
 
-- [ ] **Step 4: Verify repository hygiene**
+- [x] **Step 4: Verify repository hygiene**
 
 ```bash
 git diff --check
@@ -1033,7 +1033,7 @@ remain ignored.
 - Generate: `workspaces/qwen-first-v1/**`
 - Generate: `reports/control/**`
 
-- [ ] **Step 1: Build and pin the isolated evaluator image**
+- [x] **Step 1: Build and pin the isolated evaluator image**
 
 Run:
 
@@ -1045,7 +1045,7 @@ docker image inspect dsh-ollama-eval:node24-dsh011rc2
 Expected: the image contains Node 24.15.0, Python 3, and
 `@deepseek-ai/dsh@0.1.1-rc.2`; record its immutable image ID.
 
-- [ ] **Step 2: Install and record both local models**
+- [x] **Step 2: Install and record both local models**
 
 Run:
 
@@ -1057,7 +1057,7 @@ Expected: Ollama reports exact tags `qwen3:8b` and `qwen3:14b`; the control
 receipt records Ollama version, model digests, sizes, quantization, and local
 paths without making an inference request.
 
-- [ ] **Step 3: Run both local API probes**
+- [x] **Step 3: Run both local API probes**
 
 ```bash
 python3 scripts/experimentctl.py probe
@@ -1066,7 +1066,7 @@ python3 scripts/experimentctl.py probe
 Expected: target returns `qwen3:8b` and a valid tool call; mutator returns
 `qwen3:14b` and valid JSON.
 
-- [ ] **Step 4: Run the confidentiality canary**
+- [x] **Step 4: Run the confidentiality canary**
 
 ```bash
 python3 scripts/experimentctl.py canary --workspace workspaces/qwen-first-v1
@@ -1077,7 +1077,7 @@ target usage, and the required read-edit-test tool sequence in every retained
 trajectory. A failed attempt must start a new experiment after the model
 decision; it must not continue the current lineage.
 
-- [ ] **Step 5: Initialize the workspace**
+- [x] **Step 5: Initialize the workspace**
 
 ```bash
 python3 scripts/experimentctl.py init --workspace workspaces/qwen-first-v1
@@ -1093,7 +1093,7 @@ uv run --project vendor/RSIHub --frozen evolve init workspaces/qwen-first-v1 --r
 Expected: a new experiment ID, clean `gen/0`, matching dataset/runtime pins, and
 no copied secret file.
 
-- [ ] **Step 6: Run initialized preflight**
+- [x] **Step 6: Run initialized preflight**
 
 ```bash
 python3 scripts/experimentctl.py preflight --workspace workspaces/qwen-first-v1

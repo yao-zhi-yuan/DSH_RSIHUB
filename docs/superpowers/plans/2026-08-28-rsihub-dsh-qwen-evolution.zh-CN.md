@@ -36,7 +36,7 @@
 - 创建：`README.md`
 - 纳入版本管理：`.env.example`、`config/`、`package.json`、`package-lock.json`、`patches/`、`recipes/`、`scripts/`、`seed/`、`tasks/`、`docs/`
 
-- [ ] **步骤 1：扩展「生成态产物」的忽略规则**
+- [x] **步骤 1：扩展「生成态产物」的忽略规则**
 
 在保留既有密钥与依赖忽略规则的前提下，追加以下锚定条目：
 
@@ -45,7 +45,7 @@
 /reports/raw/
 ```
 
-- [ ] **步骤 2：记录仓库入口点**
+- [x] **步骤 2：记录仓库入口点**
 
 创建 `README.md`，包含以下命令与约束：
 
@@ -73,7 +73,7 @@ The runner uses only the configured local Ollama daemon.
 Only `target/prompt.md` may evolve.
 ```
 
-- [ ] **步骤 3：暂存前检查是否误带凭据**
+- [x] **步骤 3：暂存前检查是否误带凭据**
 
 运行：
 
@@ -85,7 +85,7 @@ rg -n --hidden \
 
 预期：不出现任何明文凭据值。
 
-- [ ] **步骤 4：纳入既有的可复现性输入**
+- [x] **步骤 4：纳入既有的可复现性输入**
 
 运行：
 
@@ -97,7 +97,7 @@ git status --short
 
 预期：`.env`、`vendor/`、`experiment/`、`runs/`、`workspaces/` 不会被暂存。
 
-- [ ] **步骤 5：提交源码基线**
+- [x] **步骤 5：提交源码基线**
 
 ```bash
 git commit -m "chore: checkpoint Qwen evolution scaffold"
@@ -111,7 +111,7 @@ git commit -m "chore: checkpoint Qwen evolution scaffold"
 - 修改：`scripts/generate_tasks.py`
 - 重新生成：`tasks/synthetic-16/**`
 
-- [ ] **步骤 1：为三个已知缺陷编写回归测试**
+- [x] **步骤 1：为三个已知缺陷编写回归测试**
 
 创建 `tests/test_task_dataset.py`，其测试应：
 
@@ -163,7 +163,7 @@ class GeneratedTaskTests(unittest.TestCase):
         self.assertIn(r"""summarize_jsonl('{"value":2}\n')""", visible)
 ```
 
-- [ ] **步骤 2：运行回归测试并确认 RED（失败）**
+- [x] **步骤 2：运行回归测试并确认 RED（失败）**
 
 运行：
 
@@ -173,7 +173,7 @@ python3 -m unittest tests.test_task_dataset -v
 
 预期：针对当前生成器，语法与「唯一词计数」断言应失败。
 
-- [ ] **步骤 3：仅修复生成器缺陷**
+- [x] **步骤 3：仅修复生成器缺陷**
 
 在 `scripts/generate_tasks.py` 中：
 
@@ -203,7 +203,7 @@ for value in ('', '/etc/passwd', '../x', 'a/../../x', r'C:\\temp\\x'):
 dockerfile = "FROM dsh-ollama-eval:node24-dsh011rc2\nWORKDIR /app\nCOPY . /app\n"
 ```
 
-- [ ] **步骤 4：重新生成并确认 GREEN（通过）**
+- [x] **步骤 4：重新生成并确认 GREEN（通过）**
 
 运行：
 
@@ -214,7 +214,7 @@ python3 -m unittest tests.test_task_dataset -v
 
 预期：所有回归测试通过，且恰好存在 16 个任务目录。
 
-- [ ] **步骤 5：新增完整的数据集审计器**
+- [x] **步骤 5：新增完整的数据集审计器**
 
 实现 `scripts/audit_tasks.py`，包含：
 
@@ -444,7 +444,7 @@ Path('result.json').write_text(json.dumps(result) + '\\n', encoding='utf-8')
 
 对每个任务，使用 `HARBOR_WORKDIR`、`HARBOR_TESTS_DIR`、`HARBOR_LOGS_DIR` 调用 `tests/test.sh`；要求初始 reward 为 `0`、oracle reward 为 `1`、进程退出码为 `0`。使用排序后的相对路径、文件模式与字节内容，对每棵完整任务树做哈希。
 
-- [ ] **步骤 6：新增审计器行为测试**
+- [x] **步骤 6：新增审计器行为测试**
 
 扩展 `tests/test_task_dataset.py`，断言：
 
@@ -465,7 +465,7 @@ self.assertEqual(
 
 篡改某一个生成的 verifier，并断言 `failed_checks` 指名该任务并报告 `verifier_syntax`。
 
-- [ ] **步骤 7：运行完整数据集审计**
+- [x] **步骤 7：运行完整数据集审计**
 
 ```bash
 python3 -m unittest tests.test_task_dataset -v
@@ -474,7 +474,7 @@ python3 scripts/audit_tasks.py --output reports/preflight/task-audit.json
 
 预期：16 个任务、零失败检查、所有初始 reward 为 0、所有 oracle reward 为 1。
 
-- [ ] **步骤 8：提交**
+- [x] **步骤 8：提交**
 
 ```bash
 git add scripts/generate_tasks.py scripts/audit_tasks.py tests/test_task_dataset.py tasks/synthetic-16 reports/preflight/task-audit.json
@@ -490,7 +490,7 @@ git commit -m "test: certify synthetic task dataset"
 - 修改：`seed/agent.py`
 - 修改：`scripts/runtime_digest.py`
 
-- [ ] **步骤 1：新增一个已脱敏的 DSH 会话 fixture**
+- [x] **步骤 1：新增一个已脱敏的 DSH 会话 fixture**
 
 创建 `tests/fixtures/dsh-session.jsonl`，包含一条用户消息、两条助手消息、一对 tool 调用/结果，以及以下「不重复计数」的 usage 记录：
 
@@ -502,7 +502,7 @@ git commit -m "test: certify synthetic task dataset"
 {"type":"assistant/message","seq":8,"data":{"message":{"role":"assistant","content":[{"type":"text","text":"Done."}],"usage":{"inputTokens":120,"outputTokens":15,"cacheReadTokens":50}}}}
 ```
 
-- [ ] **步骤 2：编写会失败的解析器测试**
+- [x] **步骤 2：编写会失败的解析器测试**
 
 创建 `tests/test_dsh_session.py`，断言：
 
@@ -522,7 +522,7 @@ self.assertIn("[REDACTED]", json.dumps(evidence.events))
 
 同时测试：损坏的 JSONL、重复的 `assistant/chunk` usage 事件、缺失 usage、以及 bearer token / endpoint 的脱敏。
 
-- [ ] **步骤 3：运行解析器测试并确认 RED**
+- [x] **步骤 3：运行解析器测试并确认 RED**
 
 ```bash
 python3 -m unittest tests.test_dsh_session -v
@@ -530,7 +530,7 @@ python3 -m unittest tests.test_dsh_session -v
 
 预期：因 `seed.dsh_session` 尚不存在而导入失败。
 
-- [ ] **步骤 4：实现解析器**
+- [x] **步骤 4：实现解析器**
 
 在 `seed/dsh_session.py` 中实现以下稳定接口：
 
@@ -561,7 +561,7 @@ def parse_session_files(
 
 仅从 `assistant/message.data.message.usage` 统计 usage，因为 `assistant/chunk` 会重复同一条响应的 usage。将 DSH 的 `user/message`、`assistant/message`、`tool/call`、`tool/result` 规范化为有序事件，使其能被 RSIHub 既有的轨迹读取器接受。对消息、参数与观测的长度设上界。
 
-- [ ] **步骤 5：把解析器输出接入 Harbor**
+- [x] **步骤 5：把解析器输出接入 Harbor**
 
 在 `seed/agent.py` 中：
 
@@ -573,11 +573,11 @@ def parse_session_files(
 - 设置元数据键 `request_count`、`configured_model`、`session_files`；
 - 在因 DSH 非零退出码抛错之前，先完成证据收集。
 
-- [ ] **步骤 6：让运行时摘要覆盖完整 seed**
+- [x] **步骤 6：让运行时摘要覆盖完整 seed**
 
 在 `scripts/runtime_digest.py` 中，用「对 `seed/` 下所有普通文件的排序递归哈希」替换逐条 seed 条目，同时继续对 lockfile、mutator 脚本与 RSIHub patch 文件做哈希。
 
-- [ ] **步骤 7：验证并提交**
+- [x] **步骤 7：验证并提交**
 
 ```bash
 python3 -m unittest tests.test_dsh_session -v
@@ -594,7 +594,7 @@ git commit -m "feat: retain DSH trajectories and token usage"
 - 修改：`scripts/rsihub_qwen_prompt_mutate.py`
 - 修改：`scripts/qwen_mutate.py`
 
-- [ ] **步骤 1：编写会失败的「证据交接」测试**
+- [x] **步骤 1：编写会失败的「证据交接」测试**
 
 创建 `tests/test_mutation_operator.py`，用一个含 `feedback/evidence/selected.md` 的临时 `run_dir`，断言：
 
@@ -611,7 +611,7 @@ self.assertEqual(len(inputs[0]["sha256"]), 64)
 
 增加一个测试：所选证据中包含任务标识符与凭据；断言凭据被脱敏，而任务证据仍对「可信 mutator」可见。
 
-- [ ] **步骤 2：编写会失败的「用量传播」测试**
+- [x] **步骤 2：编写会失败的「用量传播」测试**
 
 测试某次成功的子进程输出，其结尾为：
 
@@ -633,13 +633,13 @@ self.assertEqual(len(inputs[0]["sha256"]), 64)
 
 用量若损坏或缺失，必须让 mutate 阶段失败，而不是静默记为零。
 
-- [ ] **步骤 3：运行测试并确认 RED**
+- [x] **步骤 3：运行测试并确认 RED**
 
 ```bash
 PYTHONPATH=vendor/RSIHub/src python3 -m unittest tests.test_mutation_operator -v
 ```
 
-- [ ] **步骤 4：实现证据与用量处理**
+- [x] **步骤 4：实现证据与用量处理**
 
 在 `scripts/rsihub_qwen_prompt_mutate.py` 中新增：
 
@@ -656,7 +656,7 @@ def parse_command_usage(stdout: str, wall_s: float) -> dict[str, object]:
 
 在 `scripts/qwen_mutate.py` 中，保持 `temperature=0`，强制既有的 80–12000 字符范围与禁用词，并在其 usage 对象中包含稳定的 `request_count: 1`。
 
-- [ ] **步骤 5：验证并提交**
+- [x] **步骤 5：验证并提交**
 
 ```bash
 PYTHONPATH=vendor/RSIHub/src python3 -m unittest tests.test_mutation_operator -v
@@ -678,7 +678,7 @@ git commit -m "feat: bind mutation evidence and usage"
 - 修改：`seed/dsh-qwen.patch.yml`
 - 修改：`config/dsh-qwen.patch.yml`
 
-- [ ] **步骤 1：编写会失败的环境测试**
+- [x] **步骤 1：编写会失败的环境测试**
 
 创建 `tests/test_experimentctl.py`，断言：
 
@@ -702,13 +702,13 @@ self.assertEqual(env["EVOLVE_EXPERIMENT_ROOT"], "/repo")
 
 测试：缺失或非 loopback 的 Ollama URL、错误的模型标识、守护进程未启动、模型缺失、以及格式错误的 OpenAI 兼容响应。
 
-- [ ] **步骤 2：运行测试并确认 RED**
+- [x] **步骤 2：运行测试并确认 RED**
 
 ```bash
 python3 -m unittest tests.test_experimentctl -v
 ```
 
-- [ ] **步骤 3：实现仓库控制面**
+- [x] **步骤 3：实现仓库控制面**
 
 在 `scripts/experimentctl.py` 中实现以下命令：
 
@@ -739,7 +739,7 @@ report     regenerate the final audit bundle without model calls
 - 在首个失败门禁处停止；
 - 绝不自动重试任何模型请求。
 
-- [ ] **步骤 4：净化 DSH 进程环境**
+- [x] **步骤 4：净化 DSH 进程环境**
 
 在 `seed/agent.py` 中使用 `env -i` 构建 DSH 命令，且仅包含：
 
@@ -751,7 +751,7 @@ OLLAMA_BASE_URL OLLAMA_API_KEY OLLAMA_TARGET_MODEL
 
 不要把 `EVOLVE_HARBOR_TASKS` 或无关的父进程环境值暴露给「由模型操作的」DSH 进程。新增一个无模型测试，执行 `env -i PATH=<sanitized-path> node --version`，并要求它在任何 DSH canary 之前，能在 evaluator 镜像内解析到固定的 Node 24.15.0 二进制。
 
-- [ ] **步骤 5：配置两个本地模型角色**
+- [x] **步骤 5：配置两个本地模型角色**
 
 在 `.env.example` 中使用以下本地默认值：
 
@@ -770,7 +770,7 @@ OLLAMA_NUM_PARALLEL=2
 
 `OLLAMA_NUM_PARALLEL` 配置的是守护进程，而非客户端请求。在 macOS 上用 `launchctl setenv OLLAMA_NUM_PARALLEL 2` 设置，并在下载完成后重启 Ollama。当服务端未以匹配的并行度启动时，preflight 必须拒绝 `n_concurrent: 2`。
 
-- [ ] **步骤 6：验证并提交**
+- [x] **步骤 6：验证并提交**
 
 ```bash
 python3 -m unittest tests.test_experimentctl -v
@@ -787,7 +787,7 @@ git commit -m "feat: run both experiment roles through Ollama"
 - 创建：`tests/test_isolation_canary.py`
 - 修改：`scripts/experimentctl.py`
 
-- [ ] **步骤 1：编写会失败的「canary 结果」测试**
+- [x] **步骤 1：编写会失败的「canary 结果」测试**
 
 用以下用例测试纯结果分类器：
 
@@ -808,13 +808,13 @@ self.assertEqual(
 
 要求 canary 产物记录：尝试读取的路径、会话哈希、配置模型、Ollama 模型 digest、token 用量，以及 sentinel 是否出现。
 
-- [ ] **步骤 2：运行测试并确认 RED**
+- [x] **步骤 2：运行测试并确认 RED**
 
 ```bash
 python3 -m unittest tests.test_isolation_canary -v
 ```
 
-- [ ] **步骤 3：实现真实 canary**
+- [x] **步骤 3：实现真实 canary**
 
 `scripts/isolation_canary.py` 必须创建一个临时任务 workspace，在同级 verifier 目录里放入一个随机 sentinel，通过与正式 trial 相同的 adapter 与 patch 调用 DSH，要求其尝试精确读取该同级文件，并同时检查输出与所保留的会话事件。用 `qwen3:8b` 连续三次运行完整的 read-edit-test 多轮工具序列；每次尝试都必须在 baseline 之前成功。
 
@@ -827,7 +827,7 @@ canary 仅在以下条件全部满足时才算通过：
 
 写出脱敏结果后删除临时 sentinel。结果文件中不得包含 sentinel 值。不存在自动模型回退：不稳定的 `qwen3:8b` canary 会阻断本次运行。任何切换到其他 target（包括 `qwen3:14b`）都必须以新的运行时身份开启一个新实验；7B 与 30B 模型不在本实验范围内，且不得被隐式拉取。
 
-- [ ] **步骤 4：验证并提交**
+- [x] **步骤 4：验证并提交**
 
 ```bash
 python3 -m unittest tests.test_isolation_canary -v
@@ -844,7 +844,7 @@ git commit -m "test: gate local evaluator confidentiality"
 - 创建：`tests/test_build_report.py`
 - 创建：`reports/README.md`
 
-- [ ] **步骤 1：编写会失败的报告测试**
+- [x] **步骤 1：编写会失败的报告测试**
 
 创建一个最小 fixture，包含 baseline、三个终态 generation、Gate 与 Sealed 评估、mutation diff 与用量。断言：
 
@@ -860,13 +860,13 @@ self.assertEqual(report["audit"]["missing_artifacts"], [])
 
 删除一个被引用的文件，断言报告构建失败并给出其相对路径。向某个 fixture 加入一段「疑似凭据」的字符串，断言发布的 Markdown 中只出现 `[REDACTED]`。
 
-- [ ] **步骤 2：运行测试并确认 RED**
+- [x] **步骤 2：运行测试并确认 RED**
 
 ```bash
 python3 -m unittest tests.test_build_report -v
 ```
 
-- [ ] **步骤 3：实现确定性的报告生成**
+- [x] **步骤 3：实现确定性的报告生成**
 
 `scripts/build_report.py` 只读、绝不修改 workspace。它写出：
 
@@ -904,7 +904,7 @@ JSON schema 必须包含：
 
 对以下情况予以拒绝：expected trials 不完整、receipt 未认证、任务集不匹配、缺失 generation、缺失最终 Sealed 证据、用量格式错误、或哈希不匹配。
 
-- [ ] **步骤 4：验证并提交**
+- [x] **步骤 4：验证并提交**
 
 ```bash
 python3 -m unittest tests.test_build_report -v
@@ -918,7 +918,7 @@ git commit -m "feat: generate auditable evolution report"
 **涉及文件：**
 - 仅当某个失败测试需要时才修改：任务 2–7 引入的文件
 
-- [ ] **步骤 1：运行外层仓库全部测试**
+- [x] **步骤 1：运行外层仓库全部测试**
 
 ```bash
 python3 -m unittest discover -s tests -v
@@ -926,7 +926,7 @@ python3 -m unittest discover -s tests -v
 
 预期：全部测试通过，且无网络调用。
 
-- [ ] **步骤 2：校验任务与配置**
+- [x] **步骤 2：校验任务与配置**
 
 ```bash
 python3 scripts/experimentctl.py audit
@@ -936,7 +936,7 @@ git -C vendor/RSIHub apply --reverse --check --unidiff-zero ../../patches/rsihub
 
 预期：任务审计通过、recipe 有效、反向 patch 检查证明所需的 RSIHub patch 已应用。
 
-- [ ] **步骤 3：验证冻结的 Train 调度覆盖全部八个任务**
+- [x] **步骤 3：验证冻结的 Train 调度覆盖全部八个任务**
 
 在 `tests/test_experimentctl.py` 中新增断言：计算第 1–3 代的 generation shuffle 选择，并验证其并集等于完整的 Train split。运行：
 
@@ -946,7 +946,7 @@ python3 -m unittest tests.test_experimentctl -v
 
 预期：三代之间覆盖八个不同的 Train 任务名。
 
-- [ ] **步骤 4：验证仓库卫生**
+- [x] **步骤 4：验证仓库卫生**
 
 ```bash
 git diff --check
@@ -961,7 +961,7 @@ git status --short
 - 生成：`workspaces/qwen-first-v1/**`
 - 生成：`reports/control/**`
 
-- [ ] **步骤 1：构建并固定隔离 evaluator 镜像**
+- [x] **步骤 1：构建并固定隔离 evaluator 镜像**
 
 运行：
 
@@ -972,7 +972,7 @@ docker image inspect dsh-ollama-eval:node24-dsh011rc2
 
 预期：镜像内含 Node 24.15.0、Python 3 与 `@deepseek-ai/dsh@0.1.1-rc.2`；记录其不可变 image ID。
 
-- [ ] **步骤 2：安装并记录两个本地模型**
+- [x] **步骤 2：安装并记录两个本地模型**
 
 运行：
 
@@ -982,7 +982,7 @@ python3 scripts/experimentctl.py models --pull-missing
 
 预期：Ollama 报告精确标签 `qwen3:8b` 与 `qwen3:14b`；控制 receipt 记录 Ollama 版本、模型 digest、大小、量化与本地路径，且不发起推理请求。
 
-- [ ] **步骤 3：运行两个本地 API 探测**
+- [x] **步骤 3：运行两个本地 API 探测**
 
 ```bash
 python3 scripts/experimentctl.py probe
@@ -990,7 +990,7 @@ python3 scripts/experimentctl.py probe
 
 预期：target 返回 `qwen3:8b` 与一次有效工具调用；mutator 返回 `qwen3:14b` 与有效 JSON。
 
-- [ ] **步骤 4：运行机密性 canary**
+- [x] **步骤 4：运行机密性 canary**
 
 ```bash
 python3 scripts/experimentctl.py canary --workspace workspaces/qwen-first-v1
@@ -998,7 +998,7 @@ python3 scripts/experimentctl.py canary --workspace workspaces/qwen-first-v1
 
 预期：连续三次 `passed`、无 sentinel 泄漏、target 用量完整，且每条保留轨迹都含所需的 read-edit-test 工具序列。某次尝试失败必须在「模型决策」之后开启新实验；不得延续当前血缘。
 
-- [ ] **步骤 5：初始化 workspace**
+- [x] **步骤 5：初始化 workspace**
 
 ```bash
 python3 scripts/experimentctl.py init --workspace workspaces/qwen-first-v1
@@ -1013,7 +1013,7 @@ uv run --project vendor/RSIHub --frozen evolve init workspaces/qwen-first-v1 --r
 
 预期：一个新实验 ID、干净的 `gen/0`、匹配的 dataset/runtime 固定项，且未复制任何密钥文件。
 
-- [ ] **步骤 6：运行已初始化的 preflight**
+- [x] **步骤 6：运行已初始化的 preflight**
 
 ```bash
 python3 scripts/experimentctl.py preflight --workspace workspaces/qwen-first-v1
