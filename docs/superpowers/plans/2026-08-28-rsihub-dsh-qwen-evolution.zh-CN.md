@@ -1148,7 +1148,7 @@ local-only inference  loopback endpoint receipts and no remote model route
 - 创建：`tests/test_build_visualization.py`
 - 生成：`reports/qwen-first-v1/visualization.html`
 
-- [ ] **步骤 1：编写会失败的可视化测试**
+- [x] **步骤 1：编写会失败的可视化测试**
 
 创建 `tests/fixtures/summary-sample.json`（结构对齐任务 7 的 `summary.json`，含 baseline、三代、Gate/Sealed 分数、候选 diff、资源用量、hypothesis/expected_effect）。创建 `tests/test_build_visualization.py`，断言：
 
@@ -1163,7 +1163,7 @@ self.assertNotIn("secret-value", html)        # 证据脱敏后不泄漏
 
 补一个测试：`summary.json` 缺少必需键时，`render_html` 抛错并指名缺失键，而不是产出残缺页面。
 
-- [ ] **步骤 2：运行测试并确认 RED**
+- [x] **步骤 2：运行测试并确认 RED**
 
 ```bash
 python3 -m unittest tests.test_build_visualization -v
@@ -1171,7 +1171,7 @@ python3 -m unittest tests.test_build_visualization -v
 
 预期：因 `scripts/build_visualization.py` 尚不存在而失败。
 
-- [ ] **步骤 3：实现确定性的 HTML 渲染**
+- [x] **步骤 3：实现确定性的 HTML 渲染**
 
 `scripts/build_visualization.py` 只读 `reports/<experiment-id>/summary.json`，输出单文件、自包含（图表用内联 SVG 或轻量内联脚本，不依赖外网 CDN）的 `visualization.html`，包含：
 
@@ -1183,7 +1183,7 @@ python3 -m unittest tests.test_build_visualization -v
 
 所有文本走与报告一致的脱敏；缺失数据时报错而非静默跳过。
 
-- [ ] **步骤 4：生成并核验产物**
+- [x] **步骤 4：生成并核验产物**
 
 ```bash
 python3 scripts/build_visualization.py --workspace workspaces/qwen-first-v1 --report reports/qwen-first-v1
@@ -1192,7 +1192,7 @@ python3 -m unittest tests.test_build_visualization -v
 
 预期：生成 `reports/qwen-first-v1/visualization.html`，测试全绿，页面能在浏览器离线打开。
 
-- [ ] **步骤 5：提交**
+- [x] **步骤 5：提交**
 
 ```bash
 git add scripts/build_visualization.py tests/fixtures/summary-sample.json tests/test_build_visualization.py reports/qwen-first-v1/visualization.html

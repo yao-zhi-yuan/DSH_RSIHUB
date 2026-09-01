@@ -1235,7 +1235,7 @@ modify the workspace.
 - Create: `tests/test_build_visualization.py`
 - Generate: `reports/qwen-first-v1/visualization.html`
 
-- [ ] **Step 1: Write failing visualization tests**
+- [x] **Step 1: Write failing visualization tests**
 
 Create `tests/fixtures/summary-sample.json` mirroring Task 7's `summary.json`
 schema (baseline, three generations, Gate/Sealed scores, candidate diffs,
@@ -1254,7 +1254,7 @@ self.assertNotIn("secret-value", html)
 Add a test asserting that a `summary.json` missing a required key makes
 `render_html` raise and name the missing key rather than emit a partial page.
 
-- [ ] **Step 2: Run tests and confirm RED**
+- [x] **Step 2: Run tests and confirm RED**
 
 ```bash
 python3 -m unittest tests.test_build_visualization -v
@@ -1262,7 +1262,7 @@ python3 -m unittest tests.test_build_visualization -v
 
 Expected: failure because `scripts/build_visualization.py` does not exist.
 
-- [ ] **Step 3: Implement deterministic HTML rendering**
+- [x] **Step 3: Implement deterministic HTML rendering**
 
 `scripts/build_visualization.py` reads only
 `reports/<experiment-id>/summary.json` and writes a single, self-contained
@@ -1283,7 +1283,7 @@ containing:
 Apply the same redaction used by the report; on missing data, raise rather than
 silently skip.
 
-- [ ] **Step 4: Generate and verify the artifact**
+- [x] **Step 4: Generate and verify the artifact**
 
 ```bash
 python3 scripts/build_visualization.py --workspace workspaces/qwen-first-v1 --report reports/qwen-first-v1
@@ -1293,7 +1293,7 @@ python3 -m unittest tests.test_build_visualization -v
 Expected: `reports/qwen-first-v1/visualization.html` is generated, tests pass,
 and the page opens offline in a browser.
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```bash
 git add scripts/build_visualization.py tests/fixtures/summary-sample.json tests/test_build_visualization.py reports/qwen-first-v1/visualization.html
