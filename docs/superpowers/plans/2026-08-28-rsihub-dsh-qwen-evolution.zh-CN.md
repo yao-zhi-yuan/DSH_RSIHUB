@@ -1078,7 +1078,7 @@ workspaces/qwen-first-v1/evolve assert-run workspaces/qwen-first-v1 --through 3
 - 生成：`reports/qwen-first-v1/candidate-diffs/*.diff`
 - 修改：`README.md`
 
-- [ ] **步骤 1：在不调用模型的前提下构建报告**
+- [x] **步骤 1：在不调用模型的前提下构建报告**
 
 ```bash
 python3 scripts/experimentctl.py report --workspace workspaces/qwen-first-v1
@@ -1086,17 +1086,17 @@ python3 scripts/experimentctl.py report --workspace workspaces/qwen-first-v1
 
 预期：报告构建器退出码为 0，且 `audit.missing_artifacts` 为空。
 
-- [ ] **步骤 2：独立验证哈希与必需结果**
+- [x] **步骤 2：独立验证哈希与必需结果**
 
 ```bash
 shasum -a 256 -c reports/qwen-first-v1/manifest.sha256
-python3 scripts/build_report.py --check workspaces/qwen-first-v1 reports/qwen-first-v1
+python3 scripts/build_report.py --check --workspace workspaces/qwen-first-v1 --output reports
 python3 -m unittest discover -s tests -v
 ```
 
 预期：每条 manifest 条目均为 `OK`、报告检查通过、所有本地测试通过。
 
-- [ ] **步骤 3：加入最终实验指针**
+- [x] **步骤 3：加入最终实验指针**
 
 在 `README.md` 追加：
 
@@ -1108,7 +1108,7 @@ python3 -m unittest discover -s tests -v
 - Artifact manifest: `reports/qwen-first-v1/manifest.sha256`
 ```
 
-- [ ] **步骤 4：提交可复现交付物**
+- [x] **步骤 4：提交可复现交付物**
 
 ```bash
 git add README.md reports/qwen-first-v1
@@ -1116,7 +1116,7 @@ git diff --cached --check
 git commit -m "docs: publish first Qwen evolution results"
 ```
 
-- [ ] **步骤 5：执行完成度审计**
+- [x] **步骤 5：执行完成度审计**
 
 对照权威证据逐条核验每项原始需求：
 

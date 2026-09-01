@@ -1161,7 +1161,7 @@ generation three.
 - Generate: `reports/qwen-first-v1/candidate-diffs/*.diff`
 - Modify: `README.md`
 
-- [ ] **Step 1: Build the report without model calls**
+- [x] **Step 1: Build the report without model calls**
 
 ```bash
 python3 scripts/experimentctl.py report --workspace workspaces/qwen-first-v1
@@ -1169,18 +1169,18 @@ python3 scripts/experimentctl.py report --workspace workspaces/qwen-first-v1
 
 Expected: report builder exits zero and `audit.missing_artifacts` is empty.
 
-- [ ] **Step 2: Independently verify hashes and required outcomes**
+- [x] **Step 2: Independently verify hashes and required outcomes**
 
 ```bash
 shasum -a 256 -c reports/qwen-first-v1/manifest.sha256
-python3 scripts/build_report.py --check workspaces/qwen-first-v1 reports/qwen-first-v1
+python3 scripts/build_report.py --check --workspace workspaces/qwen-first-v1 --output reports
 python3 -m unittest discover -s tests -v
 ```
 
 Expected: every manifest entry is `OK`, report check passes, and all local tests
 pass.
 
-- [ ] **Step 3: Add the final experiment pointer**
+- [x] **Step 3: Add the final experiment pointer**
 
 Append to `README.md`:
 
@@ -1192,7 +1192,7 @@ Append to `README.md`:
 - Artifact manifest: `reports/qwen-first-v1/manifest.sha256`
 ```
 
-- [ ] **Step 4: Commit reproducible deliverables**
+- [x] **Step 4: Commit reproducible deliverables**
 
 ```bash
 git add README.md reports/qwen-first-v1
@@ -1200,7 +1200,7 @@ git diff --cached --check
 git commit -m "docs: publish first Qwen evolution results"
 ```
 
-- [ ] **Step 5: Perform the completion audit**
+- [x] **Step 5: Perform the completion audit**
 
 Verify each original requirement against authoritative evidence:
 
